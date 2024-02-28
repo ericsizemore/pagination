@@ -61,7 +61,7 @@ use function sprintf;
  * @internal
  */
 #[CoversClass(Paginator::class)]
-#[UsesClass(Pagination::class)]
+#[CoversClass(Pagination::class)]
 #[UsesClass(CallbackNotFoundException::class)]
 #[UsesClass(InvalidPageNumberException::class)]
 class PaginatorTest extends TestCase
