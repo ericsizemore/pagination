@@ -1,4 +1,7 @@
-/vendor
-/bin
-/.idea
-/phpunit.xml
+.idea/
+vendor/
+build/
+.php-cs-fixer.cache
+*.iws
+out/
+.idea_modules/

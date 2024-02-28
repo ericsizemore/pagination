@@ -1,25 +1,69 @@
 {
-    "name": "ashleydawson/simple-pagination",
-    "type": "library",
-    "description": "Simple, lightweight and universal service that implements pagination on collections of things",
-    "keywords": ["pagination", "paginator", "pager", "simple", "easy", "flexible", "universal", "lite", "lightweight"],
+    "name": "esi/pagination",
+    "description": "Simple, lightweight and universal service that implements pagination on collections of things.",
     "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "pagination",
+        "paginator",
+        "pager",
+        "simple",
+        "easy",
+        "flexible",
+        "universal",
+        "light",
+        "lite",
+        "lightweight"
+    ],
     "authors": [
         {
+            "name": "Eric Sizemore",
+            "email": "admin@secondversion.com",
+            "homepage": "https://www.secondversion.com/",
+            "role": "Fork Developer"
+        },
+        {
             "name": "Ashley Dawson",
-            "email": "ashley@ashleydawson.co.uk"
+            "email": "ashley@ashleydawson.co.uk",
+            "role": "Original Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/ericsizemore/pagination/issues",
+        "forum": "https://github.com/ericsizemore/pagination/discussions",
+        "source": "https://github.com/ericsizemore/pagination/tree/master",
+        "security": "https://github.com/ericsizemore/pagination/security/policy"
+    },
     "require": {
-        "php": ">=5.3.3"
+        "php": "^8.2 <8.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "^3.7"
+        "friendsofphp/php-cs-fixer": "dev-master",
+        "phpstan/phpstan": "^1.11",
+        "phpstan/phpstan-phpunit": "^1.4",
+        "phpstan/phpstan-strict-rules": "^1.6",
+        "phpunit/phpunit": "^11.0"
     },
+    "minimum-stability": "dev",
     "autoload": {
-        "psr-0": { "AshleyDawson\\SimplePagination\\": "lib/" }
+        "psr-4": {
+            "Esi\\Pagination\\": "src/"
+        }
     },
-    "config": {
-        "bin-dir": "bin"
+    "autoload-dev": {
+        "psr-4": {
+            "Esi\\Pagination\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    },
+    "scripts": {
+        "phpcs-fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php",
+        "phpcs-dry": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff",
+        "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon",
+        "test": "phpunit"
     }
 }
