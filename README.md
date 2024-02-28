@@ -1,6 +1,16 @@
 Pagination
 ==========
 
+[![Build Status](https://scrutinizer-ci.com/g/ericsizemore/pagination/badges/build.png?b=master)](https://scrutinizer-ci.com/g/ericsizemore/pagination/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/ericsizemore/pagination/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ericsizemore/pagination/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ericsizemore/pagination/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ericsizemore/pagination/?branch=master)
+[![Tests](https://github.com/ericsizemore/pagination/actions/workflows/tests.yml/badge.svg)](https://github.com/ericsizemore/pagination/actions/workflows/tests.yml)
+[![PHPStan](https://github.com/ericsizemore/pagination/actions/workflows/main.yml/badge.svg)](https://github.com/ericsizemore/pagination/actions/workflows/main.yml)
+
+[![Latest Stable Version](https://img.shields.io/packagist/v/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
+[![Downloads per Month](https://img.shields.io/packagist/dm/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
+[![License](https://img.shields.io/packagist/l/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
+
 Pagination library that implements a paging interface on collections of things.
 
 This library is a fork of [`AshleyDawson\SimplePagination`](https://github.com/AshleyDawson/SimplePagination).
