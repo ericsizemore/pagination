@@ -144,47 +144,23 @@ class Paginator implements PaginatorInterface
             );
         }
 
-        $beforeQueryCallback = $this->beforeQueryCallback instanceof Closure
-            ? $this->beforeQueryCallback
-            : static function (): void {}
-        ;
-
-        $afterQueryCallback = $this->afterQueryCallback instanceof Closure
-            ? $this->afterQueryCallback
-            : static function (): void {}
-        ;
+        $sliceCallback       = $this->sliceCallback;
+        $itemTotalCallback   = $this->itemTotalCallback;
+        /** @var Closure $beforeQueryCallback */
+        $beforeQueryCallback = $this->prepareBeforeQueryCallback();
+        /** @var Closure $afterQueryCallback  */
+        $afterQueryCallback  = $this->prepareAfterQueryCallback();
 
         $pagination = new Pagination();
-
-        $itemTotalCallback = $this->itemTotalCallback;
 
         $beforeQueryCallback($this, $pagination);
         $totalNumberOfItems = (int) $itemTotalCallback($pagination);
         $afterQueryCallback($this, $pagination);
 
         $numberOfPages = (int) ceil($totalNumberOfItems / $this->itemsPerPage);
-        $pagesInRange  = $this->pagesInRange;
-
-        if ($pagesInRange > $numberOfPages) {
-            $pagesInRange = $numberOfPages;
-        }
-
-        $change = (int) ceil($pagesInRange / 2);
-
-        if (($currentPageNumber - $change) > ($numberOfPages - $pagesInRange)) {
-            $pages = range(($numberOfPages - $pagesInRange) + 1, $numberOfPages);
-        } else {
-            if (($currentPageNumber - $change) < 0) {
-                $change = $currentPageNumber;
-            }
-
-            $offset = $currentPageNumber - $change;
-            $pages  = range(($offset + 1), $offset + $pagesInRange);
-        }
-
-        $offset = ($currentPageNumber - 1) * $this->itemsPerPage;
-
-        $sliceCallback = $this->sliceCallback;
+        $pagesInRange  = $this->pagesInRange > $numberOfPages ? $numberOfPages : $this->pagesInRange;
+        $pages         = $this->determinePageRange($currentPageNumber, $pagesInRange, $numberOfPages);
+        $offset        = ($currentPageNumber - 1) * $this->itemsPerPage;
 
         $beforeQueryCallback($this, $pagination);
 
@@ -200,20 +176,10 @@ class Paginator implements PaginatorInterface
 
         $afterQueryCallback($this, $pagination);
 
-        $previousPageNumber = null;
-
-        if (($currentPageNumber - 1) > 0) {
-            $previousPageNumber = $currentPageNumber - 1;
-        }
-
-        $nextPageNumber = null;
-
-        if (($currentPageNumber + 1) <= $numberOfPages) {
-            $nextPageNumber = $currentPageNumber + 1;
-        }
+        $previousPageNumber = $this->determinePreviousPageNumber($currentPageNumber);
+        $nextPageNumber     = $this->determineNextPageNumber($currentPageNumber, $numberOfPages);
 
         /** @var non-empty-array<int> $pages **/
-
         $pagination
             ->setItems($items)
             ->setPages($pages)
@@ -246,6 +212,7 @@ class Paginator implements PaginatorInterface
     public function setSliceCallback(?Closure $sliceCallback): static
     {
         $this->sliceCallback = $sliceCallback;
+
         return $this;
     }
 
@@ -271,6 +238,7 @@ class Paginator implements PaginatorInterface
     public function setBeforeQueryCallback(?Closure $beforeQueryCallback): static
     {
         $this->beforeQueryCallback = $beforeQueryCallback;
+
         return $this;
     }
 
@@ -288,6 +256,7 @@ class Paginator implements PaginatorInterface
     public function setAfterQueryCallback(?Closure $afterQueryCallback): static
     {
         $this->afterQueryCallback = $afterQueryCallback;
+
         return $this;
     }
 
@@ -297,6 +266,7 @@ class Paginator implements PaginatorInterface
     public function setItemTotalCallback(?Closure $itemTotalCallback): static
     {
         $this->itemTotalCallback = $itemTotalCallback;
+
         return $this;
     }
 
@@ -314,6 +284,7 @@ class Paginator implements PaginatorInterface
     public function setItemsPerPage(int $itemsPerPage): static
     {
         $this->itemsPerPage = $itemsPerPage;
+
         return $this;
     }
 
@@ -331,6 +302,78 @@ class Paginator implements PaginatorInterface
     public function setPagesInRange(int $pagesInRange): static
     {
         $this->pagesInRange = $pagesInRange;
+
         return $this;
+    }
+
+    // Helper functions to the main paginate() function.
+
+    /**
+     */
+    protected function prepareBeforeQueryCallback(): Closure
+    {
+        if ($this->beforeQueryCallback instanceof Closure) {
+            return $this->beforeQueryCallback;
+        }
+
+        return static function (): void {};
+    }
+
+    /**
+     */
+    protected function prepareAfterQueryCallback(): Closure
+    {
+        if ($this->afterQueryCallback instanceof Closure) {
+            return $this->afterQueryCallback;
+        }
+
+        return static function (): void {};
+    }
+
+    /**
+     * @return array<int>
+     */
+    protected function determinePageRange(int $currentPageNumber, int $pagesInRange, int $numberOfPages): array
+    {
+        $change = (int) ceil($pagesInRange / 2);
+
+        if (($currentPageNumber - $change) > ($numberOfPages - $pagesInRange)) {
+            $pages = range(($numberOfPages - $pagesInRange) + 1, $numberOfPages);
+        } else {
+            if (($currentPageNumber - $change) < 0) {
+                $change = $currentPageNumber;
+            }
+
+            $offset = $currentPageNumber - $change;
+            $pages  = range(($offset + 1), $offset + $pagesInRange);
+        }
+
+        return $pages;
+    }
+
+    /**
+     */
+    protected function determinePreviousPageNumber(int $currentPageNumber): ?int
+    {
+        $previousPageNumber = null;
+
+        if (($currentPageNumber - 1) > 0) {
+            $previousPageNumber = $currentPageNumber - 1;
+        }
+
+        return $previousPageNumber;
+    }
+
+    /**
+     */
+    protected function determineNextPageNumber(int $currentPageNumber, int $numberOfPages): ?int
+    {
+        $nextPageNumber = null;
+
+        if (($currentPageNumber + 1) <= $numberOfPages) {
+            $nextPageNumber = $currentPageNumber + 1;
+        }
+
+        return $nextPageNumber;
     }
 }
