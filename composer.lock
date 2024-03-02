@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "098dfe02a56336ea5659c2d6a0b4c9dd",
+    "content-hash": "4096712e5c0afbfde8eac82d6b4116a1",
     "packages": [],
     "packages-dev": [
         {
@@ -233,12 +233,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "1543a7a0ce3f08e4e074db0c7c1697bbe9ea2615"
+                "reference": "438d5eac73bdd50164dded5f0048526ab078c4e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/1543a7a0ce3f08e4e074db0c7c1697bbe9ea2615",
-                "reference": "1543a7a0ce3f08e4e074db0c7c1697bbe9ea2615",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/438d5eac73bdd50164dded5f0048526ab078c4e4",
+                "reference": "438d5eac73bdd50164dded5f0048526ab078c4e4",
                 "shasum": ""
             },
             "require": {
@@ -318,7 +318,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-02-27T22:15:52+00:00"
+            "time": "2024-02-28T19:50:58+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -565,12 +565,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "7d6943daa4e3b247f18f7d8bb860d8f2ca41e3bf"
+                "reference": "d9430ff06660959d9fd659b65acc2236e02cd850"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/7d6943daa4e3b247f18f7d8bb860d8f2ca41e3bf",
-                "reference": "7d6943daa4e3b247f18f7d8bb860d8f2ca41e3bf",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/d9430ff06660959d9fd659b65acc2236e02cd850",
+                "reference": "d9430ff06660959d9fd659b65acc2236e02cd850",
                 "shasum": ""
             },
             "require": {
@@ -620,7 +620,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-02-27T20:14:47+00:00"
+            "time": "2024-03-01T14:22:19+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -1059,12 +1059,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3efde166f8370f1620a72f72c0c996a035cfe1f7"
+                "reference": "c7095e9ada364041de8da7208c31ab1c37ec9c45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3efde166f8370f1620a72f72c0c996a035cfe1f7",
-                "reference": "3efde166f8370f1620a72f72c0c996a035cfe1f7",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c7095e9ada364041de8da7208c31ab1c37ec9c45",
+                "reference": "c7095e9ada364041de8da7208c31ab1c37ec9c45",
                 "shasum": ""
             },
             "require": {
@@ -1152,7 +1152,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-02-27T08:26:57+00:00"
+            "time": "2024-03-01T17:07:45+00:00"
         },
         {
             "name": "psr/container",
@@ -3596,6 +3596,9 @@
     "platform": {
         "php": "^8.2 <8.5"
     },
-    "platform-dev": [],
+    "platform-dev": {
+        "ext-pdo": "*",
+        "ext-pdo_sqlite": "*"
+    },
     "plugin-api-version": "2.6.0"
 }

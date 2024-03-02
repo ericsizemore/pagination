@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Pagination - Simple, lightweight and universal service that implements pagination on collections of things.
  *
  * @author    Eric Sizemore <admin@secondversion.com>
- * @version   2.0.0
+ * @version   2.0.1
  * @copyright (C) 2024 Eric Sizemore
  * @license   The MIT License (MIT)
  *

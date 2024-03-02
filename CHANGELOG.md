@@ -6,6 +6,33 @@ you can use the following url: https://github.com/ericsizemore/pagination/compar
 
 Simply replace the version numbers depending on which set of changes you wish to see.
 
+### 2.0.1 (2024-03-02)
+
+Mostly small coding standard (CS) related changes, with some improvements to method docblocks throughout.
+
+#### Changed
+
+  * Bumped version to `2.0.1`.
+  * Small change to how `$pagesInRange` within `paginate()` is determined.
+  * (CS) Rearranged the order of methods within `Paginator` and `PaginatorInterface`.
+  * Made the following helper functions static:
+    * `determinePageRange()`
+    * `determinePreviousPageNumber()`
+    * `determineNextPageNumber()`
+  * Updated `composer.lock`
+
+#### Added
+
+  * Added validation to `Paginator`'s construct for the passed `$config` parameter.
+    * Uses a new helper function `validateConfig()`, which is a static protected method.
+  * Added some documentation/docblocks throughout, mostly to the `PaginatorInterface`.
+  * Added `ext-pdo` and `ext-pdo_sqlite` to the composer require-dev.
+  * Added the `Override` attribute to `Paginator` methods that are from `PaginatorInterface`.
+
+#### Removed
+
+  * None
+
 
 ### 2.0.0 (2024-02-28)
 

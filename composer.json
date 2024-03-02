@@ -38,6 +38,8 @@
         "php": "^8.2 <8.5"
     },
     "require-dev": {
+        "ext-pdo": "*",
+        "ext-pdo_sqlite": "*",
         "friendsofphp/php-cs-fixer": "dev-master",
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-phpunit": "^1.4",

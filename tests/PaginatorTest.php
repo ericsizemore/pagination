@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Pagination - Simple, lightweight and universal service that implements pagination on collections of things.
  *
  * @author    Eric Sizemore <admin@secondversion.com>
- * @version   2.0.0
+ * @version   2.0.1
  * @copyright (C) 2024 Eric Sizemore
  * @license   The MIT License (MIT)
  *
@@ -41,12 +41,13 @@ declare(strict_types=1);
 
 namespace Esi\Pagination\Tests;
 
+use ArrayIterator;
 use Esi\Pagination\Exception\CallbackNotFoundException;
 use Esi\Pagination\Exception\InvalidPageNumberException;
 use Esi\Pagination\Pagination;
 use Esi\Pagination\Paginator;
 use PDO;
-use PDOException;
+use PDOStatement;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -66,16 +67,55 @@ use function sprintf;
 #[UsesClass(InvalidPageNumberException::class)]
 class PaginatorTest extends TestCase
 {
+    /**
+     * Paginator object used throughout testing.
+     */
     protected Paginator $paginator;
 
+    /**
+     * PDO_SQLITE object for the database testing.
+     */
     protected static PDO $dbObj;
 
+    /**
+     * Creates our Paginator and PDO objects.
+     */
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->paginator = new Paginator();
         self::$dbObj     = new PDO(sprintf('sqlite:%s/fixtures/factbook.db', __DIR__));
     }
 
+    /**
+     */
+    public function testConstructionWithInvalidConfig(): void
+    {
+        // @phpstan-ignore-next-line
+        $paginator = new Paginator([
+            'itemTotalCallback' => '',
+            'sliceCallback'     => '',
+            'itemsPerPage'      => '',
+            'pagesInRange'      => '',
+            'nonexistent'       => '',
+        ]);
+
+        self::assertNull($paginator->getItemTotalCallback());
+        self::assertNull($paginator->getSliceCallback());
+        self::assertSame(10, $paginator->getItemsPerPage());
+        self::assertSame(5, $paginator->getPagesInRange());
+    }
+
+    /**
+     * Test pagination of database results. This test uses PDO and a SQLite db, though this is perfectly
+     * valid for MySQL, etc. as well.
+     *
+     * Uses factbook.db, which is licensed under the CC0-1.0 (public domain).
+     *
+     * @see https://github.com/factbook/factbook.sql/releases
+     * @see ../fixtures/factbook.db
+     */
     public function testPaginateDbResults(): void
     {
         $paginator = new Paginator();
@@ -84,7 +124,7 @@ class PaginatorTest extends TestCase
             ->setPagesInRange(5);
 
         $paginator->setItemTotalCallback(static function (): int {
-            /** @var \PDOStatement $result */
+            /** @var PDOStatement $result */
             $result = self::$dbObj->query("SELECT COUNT(*) as totalCount FROM facts");
             $row    = $result->fetchColumn();
             return (int) $row;
@@ -92,7 +132,7 @@ class PaginatorTest extends TestCase
 
         // Pass our slice callback.
         $paginator->setSliceCallback(static function (int $offset, int $length): array {
-            /** @var \PDOStatement $result */
+            /** @var PDOStatement $result */
             $result     = self::$dbObj->query(sprintf('SELECT name, area FROM facts ORDER BY area DESC LIMIT %d, %d', $offset, $length), PDO::FETCH_ASSOC);
             $collection = [];
 
@@ -103,7 +143,7 @@ class PaginatorTest extends TestCase
             return $collection;
         });
 
-        $pagination = $paginator->paginate(1);
+        $pagination = $paginator->paginate();
 
         self::assertNotEmpty($pagination->getItems());
         self::assertSame(261, $pagination->getTotalNumberOfItems());
@@ -366,7 +406,7 @@ class PaginatorTest extends TestCase
         self::assertFalse($beforeQueryFired);
         self::assertFalse($afterQueryFired);
 
-        $paginator->paginate(1);
+        $paginator->paginate();
 
         self::assertTrue($beforeQueryFired); // @phpstan-ignore-line
         self::assertTrue($afterQueryFired); // @phpstan-ignore-line
@@ -392,7 +432,7 @@ class PaginatorTest extends TestCase
             'pagesInRange'      => 5,
         ]);
 
-        $pagination = $paginator->paginate(1);
+        $pagination = $paginator->paginate();
 
         self::assertCount(10, $pagination->getItems());
         self::assertCount(3, $pagination->getPages());
@@ -458,7 +498,7 @@ class PaginatorTest extends TestCase
             'pagesInRange'      => 5,
         ]);
 
-        $pagination = $paginator->paginate(1);
+        $pagination = $paginator->paginate();
 
         self::assertCount(15, $pagination);
 
@@ -491,7 +531,7 @@ class PaginatorTest extends TestCase
             return array_slice($items, $offset, $length);
         });
 
-        $pagination = $this->paginator->paginate(1);
+        $pagination = $this->paginator->paginate();
 
         self::assertContains('meta_1', $pagination->getMeta());
         self::assertContains('meta_2', $pagination->getMeta());
@@ -570,7 +610,7 @@ class PaginatorTest extends TestCase
             return array_slice($items, $offset, $length);
         });
 
-        $pagination = $this->paginator->paginate(1);
+        $pagination = $this->paginator->paginate();
 
         self::assertContains('meta_3', $pagination->getMeta());
         self::assertContains('meta_4', $pagination->getMeta());
@@ -631,7 +671,7 @@ class PaginatorTest extends TestCase
         self::assertContains('meta_4', $pagination->getMeta());
     }
 
-    public function testPaginateNegativeOne(): void
+    public function testPaginateItemsPerPageNegativeOne(): void
     {
         $items = range(0, 1000);
 
@@ -649,7 +689,7 @@ class PaginatorTest extends TestCase
             return array_slice($items, $offset, $length);
         });
 
-        $pagination = $this->paginator->paginate(1);
+        $pagination = $this->paginator->paginate();
 
         self::assertContains('meta_3', $pagination->getMeta());
         self::assertContains('meta_4', $pagination->getMeta());
@@ -716,12 +756,12 @@ class PaginatorTest extends TestCase
 
         $paginator = new Paginator([
             'itemTotalCallback' => static fn (): int => count($items),
-            'sliceCallback'     => static fn (int $offset, int $length): \ArrayIterator => new \ArrayIterator(array_slice($items, $offset, $length)),
+            'sliceCallback'     => static fn (int $offset, int $length): ArrayIterator => new ArrayIterator(array_slice($items, $offset, $length)),
             'itemsPerPage'      => 15,
             'pagesInRange'      => 5,
         ]);
 
-        $pagination = $paginator->paginate(1);
+        $pagination = $paginator->paginate();
 
         self::assertCount(15, $pagination);
 
@@ -732,8 +772,6 @@ class PaginatorTest extends TestCase
 
     public function testItemTotalCallbackNotFound(): void
     {
-        $items = range(0, 27);
-
         $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
 
         $this->expectException(CallbackNotFoundException::class);
@@ -744,8 +782,6 @@ class PaginatorTest extends TestCase
 
     public function testSliceCallbackNotFound(): void
     {
-        $items = range(0, 27);
-
         $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
 
         $this->expectException(CallbackNotFoundException::class);
