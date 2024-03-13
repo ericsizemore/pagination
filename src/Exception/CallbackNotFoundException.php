@@ -6,12 +6,12 @@ declare(strict_types=1);
  * Pagination - Simple, lightweight and universal service that implements pagination on collections of things.
  *
  * @author    Eric Sizemore <admin@secondversion.com>
- * @version   2.0.1
+ * @version   2.0.2
  * @copyright (C) 2024 Eric Sizemore
  * @license   The MIT License (MIT)
  *
- * Copyright (C) 2024 Eric Sizemore<https://www.secondversion.com/>.
- * Copyright (c) 2015-2019 Ashley Dawson<ashley@ashleydawson.co.uk>
+ * Copyright (C) 2024 Eric Sizemore <https://www.secondversion.com/>.
+ * Copyright (c) 2015-2019 Ashley Dawson <ashley@ashleydawson.co.uk>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -31,7 +31,6 @@ declare(strict_types=1);
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 /**
  * Esi\Pagination is a fork of AshleyDawson\SimplePagination (https://github.com/AshleyDawson/SimplePagination) which is:
  *     Copyright (c) 2015-2019 Ashley Dawson
@@ -44,6 +43,6 @@ namespace Esi\Pagination\Exception;
 use RuntimeException;
 
 /**
- * Class CallbackNotFoundException
+ * Class CallbackNotFoundException.
  */
 class CallbackNotFoundException extends RuntimeException {}

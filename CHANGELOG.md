@@ -6,6 +6,24 @@ you can use the following url: https://github.com/ericsizemore/pagination/compar
 
 Simply replace the version numbers depending on which set of changes you wish to see.
 
+
+### 2.0.2 (work in progress)
+
+Mostly small coding standard (CS) related changes, with some improvements to method docblocks throughout.
+
+#### Changed
+
+  * Updated `composer.lock`
+
+#### Added
+
+  * Added codecov.io into workflow.
+
+#### Removed
+
+  * None
+
+
 ### 2.0.1 (2024-03-02)
 
 Mostly small coding standard (CS) related changes, with some improvements to method docblocks throughout.

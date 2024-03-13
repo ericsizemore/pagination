@@ -6,12 +6,12 @@ declare(strict_types=1);
  * Pagination - Simple, lightweight and universal service that implements pagination on collections of things.
  *
  * @author    Eric Sizemore <admin@secondversion.com>
- * @version   2.0.1
+ * @version   2.0.2
  * @copyright (C) 2024 Eric Sizemore
  * @license   The MIT License (MIT)
  *
- * Copyright (C) 2024 Eric Sizemore<https://www.secondversion.com/>.
- * Copyright (c) 2015-2019 Ashley Dawson<ashley@ashleydawson.co.uk>
+ * Copyright (C) 2024 Eric Sizemore <https://www.secondversion.com/>.
+ * Copyright (c) 2015-2019 Ashley Dawson <ashley@ashleydawson.co.uk>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -31,7 +31,6 @@ declare(strict_types=1);
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 /**
  * Esi\Pagination is a fork of AshleyDawson\SimplePagination (https://github.com/AshleyDawson/SimplePagination) which is:
  *     Copyright (c) 2015-2019 Ashley Dawson
@@ -96,7 +95,7 @@ class Paginator implements PaginatorInterface
     private int $pagesInRange = 5;
 
     /**
-     * Constructor - passing optional configuration
+     * Constructor - passing optional configuration.
      *
      * <code>
      * $paginator = new Paginator([
@@ -133,7 +132,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function paginate(int $currentPageNumber = 1): Pagination
@@ -189,7 +188,7 @@ class Paginator implements PaginatorInterface
         $previousPageNumber = self::determinePreviousPageNumber($currentPageNumber);
         $nextPageNumber     = self::determineNextPageNumber($currentPageNumber, $numberOfPages);
 
-        /** @var non-empty-array<int> $pages **/
+        /** @var non-empty-array<int> $pages * */
         $pagination
             ->setItems($items)
             ->setPages($pages)
@@ -209,7 +208,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function getItemTotalCallback(): ?Closure
@@ -218,7 +217,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function setItemTotalCallback(?Closure $itemTotalCallback): static
@@ -229,7 +228,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function getSliceCallback(): ?Closure
@@ -238,7 +237,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function setSliceCallback(?Closure $sliceCallback): static
@@ -249,7 +248,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function getBeforeQueryCallback(): ?Closure
@@ -258,7 +257,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function setBeforeQueryCallback(?Closure $beforeQueryCallback): static
@@ -269,7 +268,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function getAfterQueryCallback(): ?Closure
@@ -278,7 +277,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function setAfterQueryCallback(?Closure $afterQueryCallback): static
@@ -289,7 +288,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function getItemsPerPage(): int
@@ -298,7 +297,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function setItemsPerPage(int $itemsPerPage): static
@@ -309,7 +308,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function getPagesInRange(): int
@@ -318,7 +317,7 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     #[\Override]
     public function setPagesInRange(int $pagesInRange): static
