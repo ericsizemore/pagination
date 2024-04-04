@@ -44,8 +44,6 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 
-use function count;
-
 /**
  * Pagination class.
  *
@@ -53,25 +51,6 @@ use function count;
  */
 class Pagination implements IteratorAggregate, Countable
 {
-    /**
-     * Item collection.
-     *
-     * @var array<int>
-     */
-    private array $items = [];
-
-    /**
-     * Page collection.
-     *
-     * @var array<int>
-     */
-    private array $pages = [];
-
-    /**
-     * Total number of pages for the item collection.
-     */
-    private int $totalNumberOfPages;
-
     /**
      * Current page number of item collection.
      */
@@ -83,19 +62,15 @@ class Pagination implements IteratorAggregate, Countable
     private int $firstPageNumber;
 
     /**
-     * Last page number of item collection.
+     * Given a page range, first page number.
      */
-    private int $lastPageNumber;
-
+    private int $firstPageNumberInRange;
     /**
-     * Previous page number. Will be null if on the first page.
+     * Item collection.
+     *
+     * @var array<int>
      */
-    private ?int $previousPageNumber = null;
-
-    /**
-     * Next page number. Will be null if on the last page.
-     */
-    private ?int $nextPageNumber = null;
+    private array $items = [];
 
     /**
      * Currently set amount of items we want per page.
@@ -103,14 +78,9 @@ class Pagination implements IteratorAggregate, Countable
     private int $itemsPerPage;
 
     /**
-     * Total number of items in the collection.
+     * Last page number of item collection.
      */
-    private int $totalNumberOfItems;
-
-    /**
-     * Given a page range, first page number.
-     */
-    private int $firstPageNumberInRange;
+    private int $lastPageNumber;
 
     /**
      * Given a page range, last page number.
@@ -125,6 +95,56 @@ class Pagination implements IteratorAggregate, Countable
     private array $meta;
 
     /**
+     * Next page number. Will be null if on the last page.
+     */
+    private ?int $nextPageNumber = null;
+
+    /**
+     * Page collection.
+     *
+     * @var array<int>
+     */
+    private array $pages = [];
+
+    /**
+     * Previous page number. Will be null if on the first page.
+     */
+    private ?int $previousPageNumber = null;
+
+    /**
+     * Total number of items in the collection.
+     */
+    private int $totalNumberOfItems;
+
+    /**
+     * Total number of pages for the item collection.
+     */
+    private int $totalNumberOfPages;
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return \count($this->items);
+    }
+
+    public function getCurrentPageNumber(): int
+    {
+        return $this->currentPageNumber;
+    }
+
+    public function getFirstPageNumber(): int
+    {
+        return $this->firstPageNumber;
+    }
+
+    public function getFirstPageNumberInRange(): int
+    {
+        return $this->firstPageNumberInRange;
+    }
+
+    /**
      * Returns the current collection.
      *
      * @return array<int>
@@ -132,6 +152,88 @@ class Pagination implements IteratorAggregate, Countable
     public function getItems(): array
     {
         return $this->items;
+    }
+
+    public function getItemsPerPage(): int
+    {
+        return $this->itemsPerPage;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @return ArrayIterator<(int|string), int>
+     */
+    public function getIterator(): ArrayIterator
+    {
+        return new ArrayIterator($this->items);
+    }
+
+    public function getLastPageNumber(): int
+    {
+        return $this->lastPageNumber;
+    }
+
+    public function getLastPageNumberInRange(): int
+    {
+        return $this->lastPageNumberInRange;
+    }
+
+    /**
+     * @return array<int|string, string>|array<mixed>
+     */
+    public function getMeta(): array
+    {
+        return $this->meta;
+    }
+
+    public function getNextPageNumber(): ?int
+    {
+        return $this->nextPageNumber;
+    }
+
+    /**
+     * @return array<int>
+     */
+    public function getPages(): array
+    {
+        return $this->pages;
+    }
+
+    public function getPreviousPageNumber(): ?int
+    {
+        return $this->previousPageNumber;
+    }
+
+    public function getTotalNumberOfItems(): int
+    {
+        return $this->totalNumberOfItems;
+    }
+
+    public function getTotalNumberOfPages(): int
+    {
+        return $this->totalNumberOfPages;
+    }
+
+    public function setCurrentPageNumber(int $currentPageNumber): static
+    {
+        $this->currentPageNumber = $currentPageNumber;
+
+        return $this;
+    }
+
+    public function setFirstPageNumber(int $firstPageNumber): static
+    {
+        $this->firstPageNumber = $firstPageNumber;
+
+        return $this;
+    }
+
+    public function setFirstPageNumberInRange(int $firstPageNumberInRange): static
+    {
+        $this->firstPageNumberInRange = $firstPageNumberInRange;
+
+        return $this;
     }
 
     /**
@@ -146,57 +248,11 @@ class Pagination implements IteratorAggregate, Countable
         return $this;
     }
 
-    public function getCurrentPageNumber(): int
-    {
-        return $this->currentPageNumber;
-    }
-
-    public function setCurrentPageNumber(int $currentPageNumber): static
-    {
-        $this->currentPageNumber = $currentPageNumber;
-
-        return $this;
-    }
-
-    public function getFirstPageNumber(): int
-    {
-        return $this->firstPageNumber;
-    }
-
-    public function setFirstPageNumber(int $firstPageNumber): static
-    {
-        $this->firstPageNumber = $firstPageNumber;
-
-        return $this;
-    }
-
-    public function getFirstPageNumberInRange(): int
-    {
-        return $this->firstPageNumberInRange;
-    }
-
-    public function setFirstPageNumberInRange(int $firstPageNumberInRange): static
-    {
-        $this->firstPageNumberInRange = $firstPageNumberInRange;
-
-        return $this;
-    }
-
-    public function getItemsPerPage(): int
-    {
-        return $this->itemsPerPage;
-    }
-
     public function setItemsPerPage(int $itemsPerPage): static
     {
         $this->itemsPerPage = $itemsPerPage;
 
         return $this;
-    }
-
-    public function getLastPageNumber(): int
-    {
-        return $this->lastPageNumber;
     }
 
     public function setLastPageNumber(int $lastPageNumber): static
@@ -206,11 +262,6 @@ class Pagination implements IteratorAggregate, Countable
         return $this;
     }
 
-    public function getLastPageNumberInRange(): int
-    {
-        return $this->lastPageNumberInRange;
-    }
-
     public function setLastPageNumberInRange(int $lastPageNumberInRange): static
     {
         $this->lastPageNumberInRange = $lastPageNumberInRange;
@@ -218,9 +269,14 @@ class Pagination implements IteratorAggregate, Countable
         return $this;
     }
 
-    public function getNextPageNumber(): ?int
+    /**
+     * @param array<int|string, string>|array<mixed> $meta
+     */
+    public function setMeta(array $meta): static
     {
-        return $this->nextPageNumber;
+        $this->meta = $meta;
+
+        return $this;
     }
 
     public function setNextPageNumber(?int $nextPageNumber): static
@@ -228,14 +284,6 @@ class Pagination implements IteratorAggregate, Countable
         $this->nextPageNumber = $nextPageNumber;
 
         return $this;
-    }
-
-    /**
-     * @return array<int>
-     */
-    public function getPages(): array
-    {
-        return $this->pages;
     }
 
     /**
@@ -248,21 +296,11 @@ class Pagination implements IteratorAggregate, Countable
         return $this;
     }
 
-    public function getPreviousPageNumber(): ?int
-    {
-        return $this->previousPageNumber;
-    }
-
     public function setPreviousPageNumber(?int $previousPageNumber): static
     {
         $this->previousPageNumber = $previousPageNumber;
 
         return $this;
-    }
-
-    public function getTotalNumberOfItems(): int
-    {
-        return $this->totalNumberOfItems;
     }
 
     public function setTotalNumberOfItems(int $totalNumberOfItems): static
@@ -272,50 +310,9 @@ class Pagination implements IteratorAggregate, Countable
         return $this;
     }
 
-    public function getTotalNumberOfPages(): int
-    {
-        return $this->totalNumberOfPages;
-    }
-
     public function setTotalNumberOfPages(int $totalNumberOfPages): static
     {
         $this->totalNumberOfPages = $totalNumberOfPages;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     *
-     * @return ArrayIterator<(int|string), int>
-     */
-    public function getIterator(): ArrayIterator
-    {
-        return new ArrayIterator($this->items);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function count(): int
-    {
-        return count($this->items);
-    }
-
-    /**
-     * @return array<int|string, string>|array<mixed>
-     */
-    public function getMeta(): array
-    {
-        return $this->meta;
-    }
-
-    /**
-     * @param array<int|string, string>|array<mixed> $meta
-     */
-    public function setMeta(array $meta): static
-    {
-        $this->meta = $meta;
 
         return $this;
     }

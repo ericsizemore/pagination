@@ -43,13 +43,42 @@ namespace Esi\Pagination;
 use Closure;
 use Esi\Pagination\Exception\CallbackNotFoundException;
 use Esi\Pagination\Exception\InvalidPageNumberException;
-use InvalidArgumentException;
 
 /**
  * Interface PaginatorInterface.
  */
 interface PaginatorInterface
 {
+    /**
+     * Returns the currently assigned after query callback, null if not set.
+     */
+    public function getAfterQueryCallback(): ?Closure;
+
+    /**
+     * Returns the currently assigned before query callback, null if not set.
+     */
+    public function getBeforeQueryCallback(): ?Closure;
+
+    /**
+     * Returns the number of items per page.
+     */
+    public function getItemsPerPage(): int;
+
+    /**
+     * Returns the currently assigned item total callback, or null if not set.
+     */
+    public function getItemTotalCallback(): ?Closure;
+
+    /**
+     * Returns the number of pages in range.
+     */
+    public function getPagesInRange(): int;
+
+    /**
+     * Returns the currently assigned slice callback, or null if not set.
+     */
+    public function getSliceCallback(): ?Closure;
+
     /**
      * Run paginate algorithm using the current page number.
      *
@@ -63,9 +92,23 @@ interface PaginatorInterface
     public function paginate(int $currentPageNumber = 1): Pagination;
 
     /**
-     * Returns the currently assigned item total callback, or null if not set.
+     * Sets the after query callback. Called after the count and slice queries.
+     *
+     * This should be a Closure, and there is no real return or signature expectation.
      */
-    public function getItemTotalCallback(): ?Closure;
+    public function setAfterQueryCallback(?Closure $afterQueryCallback): PaginatorInterface;
+
+    /**
+     * Sets the before query callback. Called before the count and slice queries.
+     *
+     * This should be a Closure, and there is no real return or signature expectation.
+     */
+    public function setBeforeQueryCallback(?Closure $beforeQueryCallback): PaginatorInterface;
+
+    /**
+     * Sets the number of items per page.
+     */
+    public function setItemsPerPage(int $itemsPerPage): PaginatorInterface;
 
     /**
      * Sets the item total callback. Used to determine the total number of items in your collection.
@@ -79,9 +122,9 @@ interface PaginatorInterface
     public function setItemTotalCallback(?Closure $itemTotalCallback): PaginatorInterface;
 
     /**
-     * Returns the currently assigned slice callback, or null if not set.
+     * Sets the number of pages in range.
      */
-    public function getSliceCallback(): ?Closure;
+    public function setPagesInRange(int $pagesInRange): PaginatorInterface;
 
     /**
      * Sets the slice callback. Actually slices your collection given an **offset** and **length** argument.
@@ -93,48 +136,4 @@ interface PaginatorInterface
      * }
      */
     public function setSliceCallback(?Closure $sliceCallback): PaginatorInterface;
-
-    /**
-     * Returns the currently assigned before query callback, null if not set.
-     */
-    public function getBeforeQueryCallback(): ?Closure;
-
-    /**
-     * Sets the before query callback. Called before the count and slice queries.
-     *
-     * This should be a Closure, and there is no real return or signature expectation.
-     */
-    public function setBeforeQueryCallback(?Closure $beforeQueryCallback): PaginatorInterface;
-
-    /**
-     * Returns the currently assigned after query callback, null if not set.
-     */
-    public function getAfterQueryCallback(): ?Closure;
-
-    /**
-     * Sets the after query callback. Called after the count and slice queries.
-     *
-     * This should be a Closure, and there is no real return or signature expectation.
-     */
-    public function setAfterQueryCallback(?Closure $afterQueryCallback): PaginatorInterface;
-
-    /**
-     * Returns the number of items per page.
-     */
-    public function getItemsPerPage(): int;
-
-    /**
-     * Sets the number of items per page.
-     */
-    public function setItemsPerPage(int $itemsPerPage): PaginatorInterface;
-
-    /**
-     * Returns the number of pages in range.
-     */
-    public function getPagesInRange(): int;
-
-    /**
-     * Sets the number of pages in range.
-     */
-    public function setPagesInRange(int $pagesInRange): PaginatorInterface;
 }

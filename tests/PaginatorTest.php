@@ -52,8 +52,6 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 use function array_merge;
-use function array_slice;
-use function count;
 use function range;
 use function sprintf;
 
@@ -87,6 +85,73 @@ class PaginatorTest extends TestCase
         self::$dbObj     = new PDO(sprintf('sqlite:%s/fixtures/factbook.db', __DIR__));
     }
 
+    public function testBeforeAndAfterQueryCallbacks(): void
+    {
+        $items = range(0, 27);
+
+        $paginator = new Paginator([
+            'itemTotalCallback' => static fn (): int => \count($items),
+            'sliceCallback'     => static fn (int $offset, int $length): array => \array_slice($items, $offset, $length),
+            'itemsPerPage'      => 10,
+            'pagesInRange'      => 5,
+        ]);
+
+        $beforeQueryFired = false;
+        $paginator->setBeforeQueryCallback(static function () use (&$beforeQueryFired): void {
+            $beforeQueryFired = true;
+        });
+
+        $afterQueryFired = false;
+        $paginator->setAfterQueryCallback(static function () use (&$afterQueryFired): void {
+            $afterQueryFired = true;
+        });
+
+        self::assertFalse($beforeQueryFired);
+        self::assertFalse($afterQueryFired);
+
+        $paginator->paginate();
+
+        self::assertTrue($beforeQueryFired); // @phpstan-ignore-line
+        self::assertTrue($afterQueryFired); // @phpstan-ignore-line
+
+        $beforeCallback = $paginator->getBeforeQueryCallback();
+        $afterCallback  = $paginator->getAfterQueryCallback();
+
+        self::assertInstanceOf('\Closure', $beforeCallback);
+        self::assertInstanceOf('\Closure', $afterCallback);
+
+        self::assertNull($beforeCallback());
+        self::assertNull($afterCallback());
+    }
+
+    public function testBeforeAndAfterQueryCallbacksZeroPageNumber(): void
+    {
+        $items = range(0, 27);
+
+        $paginator = new Paginator([
+            'itemTotalCallback' => static fn (): int => \count($items),
+            'sliceCallback'     => static fn (int $offset, int $length): array => \array_slice($items, $offset, $length),
+            'itemsPerPage'      => 10,
+            'pagesInRange'      => 5,
+        ]);
+
+        $beforeQueryFired = false;
+        $paginator->setBeforeQueryCallback(static function () use (&$beforeQueryFired): void {
+            $beforeQueryFired = true;
+        });
+
+        $afterQueryFired = false;
+        $paginator->setAfterQueryCallback(static function () use (&$afterQueryFired): void {
+            $afterQueryFired = true;
+        });
+
+        self::assertFalse($beforeQueryFired);
+        self::assertFalse($afterQueryFired);
+
+        $this->expectException(InvalidPageNumberException::class);
+        $paginator->paginate(0);
+    }
+
     /**
      */
     public function testConstructionWithInvalidConfig(): void
@@ -104,6 +169,16 @@ class PaginatorTest extends TestCase
         self::assertNull($paginator->getSliceCallback());
         self::assertSame(10, $paginator->getItemsPerPage());
         self::assertSame(5, $paginator->getPagesInRange());
+    }
+
+    public function testItemTotalCallbackNotFound(): void
+    {
+        $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
+
+        $this->expectException(CallbackNotFoundException::class);
+        $this->paginator->setItemTotalCallback(null);
+        $this->paginator->setSliceCallback(static fn (): string => 'slice_callback');
+        $this->paginator->paginate();
     }
 
     /**
@@ -310,285 +385,11 @@ class PaginatorTest extends TestCase
         self::assertCount(0, $pagination->getItems());
     }
 
-    public function testSetSliceCallback(): void
-    {
-        $this->paginator->setSliceCallback(static fn (): string => 'slice_callback');
-
-        $callback = $this->paginator->getSliceCallback();
-
-        self::assertInstanceOf('\Closure', $callback);
-
-        self::assertSame('slice_callback', $callback());
-    }
-
-    public function testSetItemTotalCallback(): void
-    {
-        $this->paginator->setItemTotalCallback(static fn (): string => 'item_total_callback');
-
-        $callback = $this->paginator->getItemTotalCallback();
-
-        self::assertInstanceOf('\Closure', $callback);
-
-        self::assertSame('item_total_callback', $callback());
-    }
-
-    public function testSetItemsPerPage(): void
-    {
-        $this->paginator->setItemsPerPage(45);
-
-        self::assertSame(45, $this->paginator->getItemsPerPage());
-    }
-
-    public function testSetPagesInRange(): void
-    {
-        $this->paginator->setPagesInRange(23);
-
-        self::assertSame(23, $this->paginator->getPagesInRange());
-    }
-
     public function testPaginateFailZeroPageNumber(): void
     {
         $this->expectException(InvalidPageNumberException::class);
         $this->expectException(CallbackNotFoundException::class);
         $this->paginator->paginate(0);
-    }
-
-    public function testBeforeAndAfterQueryCallbacksZeroPageNumber(): void
-    {
-        $items = range(0, 27);
-
-        $paginator = new Paginator([
-            'itemTotalCallback' => static fn (): int => count($items),
-            'sliceCallback'     => static fn (int $offset, int $length): array => array_slice($items, $offset, $length),
-            'itemsPerPage'      => 10,
-            'pagesInRange'      => 5,
-        ]);
-
-        $beforeQueryFired = false;
-        $paginator->setBeforeQueryCallback(static function () use (&$beforeQueryFired): void {
-            $beforeQueryFired = true;
-        });
-
-        $afterQueryFired = false;
-        $paginator->setAfterQueryCallback(static function () use (&$afterQueryFired): void {
-            $afterQueryFired = true;
-        });
-
-        self::assertFalse($beforeQueryFired);
-        self::assertFalse($afterQueryFired);
-
-        $this->expectException(InvalidPageNumberException::class);
-        $paginator->paginate(0);
-    }
-
-    public function testBeforeAndAfterQueryCallbacks(): void
-    {
-        $items = range(0, 27);
-
-        $paginator = new Paginator([
-            'itemTotalCallback' => static fn (): int => count($items),
-            'sliceCallback'     => static fn (int $offset, int $length): array => array_slice($items, $offset, $length),
-            'itemsPerPage'      => 10,
-            'pagesInRange'      => 5,
-        ]);
-
-        $beforeQueryFired = false;
-        $paginator->setBeforeQueryCallback(static function () use (&$beforeQueryFired): void {
-            $beforeQueryFired = true;
-        });
-
-        $afterQueryFired = false;
-        $paginator->setAfterQueryCallback(static function () use (&$afterQueryFired): void {
-            $afterQueryFired = true;
-        });
-
-        self::assertFalse($beforeQueryFired);
-        self::assertFalse($afterQueryFired);
-
-        $paginator->paginate();
-
-        self::assertTrue($beforeQueryFired); // @phpstan-ignore-line
-        self::assertTrue($afterQueryFired); // @phpstan-ignore-line
-
-        $beforeCallback = $paginator->getBeforeQueryCallback();
-        $afterCallback  = $paginator->getAfterQueryCallback();
-
-        self::assertInstanceOf('\Closure', $beforeCallback);
-        self::assertInstanceOf('\Closure', $afterCallback);
-
-        self::assertNull($beforeCallback());
-        self::assertNull($afterCallback());
-    }
-
-    public function testPaginateLowVolumeConstructorConfig(): void
-    {
-        $items = range(0, 27);
-
-        $paginator = new Paginator([
-            'itemTotalCallback' => static fn (): int => count($items),
-            'sliceCallback'     => static fn (int $offset, int $length): array => array_slice($items, $offset, $length),
-            'itemsPerPage'      => 10,
-            'pagesInRange'      => 5,
-        ]);
-
-        $pagination = $paginator->paginate();
-
-        self::assertCount(10, $pagination->getItems());
-        self::assertCount(3, $pagination->getPages());
-
-        self::assertSame(3, $pagination->getTotalNumberOfPages());
-        self::assertSame(1, $pagination->getCurrentPageNumber());
-        self::assertSame(1, $pagination->getFirstPageNumber());
-        self::assertSame(3, $pagination->getLastPageNumber());
-
-        self::assertNull($pagination->getPreviousPageNumber());
-
-        self::assertSame(2, $pagination->getNextPageNumber());
-        self::assertSame(10, $pagination->getItemsPerPage());
-        self::assertSame(28, $pagination->getTotalNumberOfItems());
-        self::assertSame(1, $pagination->getFirstPageNumberInRange());
-        self::assertSame(3, $pagination->getLastPageNumberInRange());
-
-        // Increment page
-        $pagination = $paginator->paginate(2);
-
-        self::assertCount(10, $pagination->getItems());
-        self::assertCount(3, $pagination->getPages());
-
-        self::assertSame(3, $pagination->getTotalNumberOfPages());
-        self::assertSame(2, $pagination->getCurrentPageNumber());
-        self::assertSame(1, $pagination->getFirstPageNumber());
-        self::assertSame(3, $pagination->getLastPageNumber());
-        self::assertSame(1, $pagination->getPreviousPageNumber());
-        self::assertSame(3, $pagination->getNextPageNumber());
-        self::assertSame(10, $pagination->getItemsPerPage());
-        self::assertSame(28, $pagination->getTotalNumberOfItems());
-        self::assertSame(1, $pagination->getFirstPageNumberInRange());
-        self::assertSame(3, $pagination->getLastPageNumberInRange());
-
-        // Increment page
-        $pagination = $paginator->paginate(3);
-
-        self::assertCount(8, $pagination->getItems());
-        self::assertCount(3, $pagination->getPages());
-
-        self::assertSame(3, $pagination->getTotalNumberOfPages());
-        self::assertSame(3, $pagination->getCurrentPageNumber());
-        self::assertSame(1, $pagination->getFirstPageNumber());
-        self::assertSame(3, $pagination->getLastPageNumber());
-        self::assertSame(2, $pagination->getPreviousPageNumber());
-
-        self::assertNull($pagination->getNextPageNumber());
-
-        self::assertSame(10, $pagination->getItemsPerPage());
-        self::assertSame(28, $pagination->getTotalNumberOfItems());
-        self::assertSame(1, $pagination->getFirstPageNumberInRange());
-        self::assertSame(3, $pagination->getLastPageNumberInRange());
-    }
-
-    public function testPaginationIteratorAggregate(): void
-    {
-        $items = range(0, 27);
-
-        $paginator = new Paginator([
-            'itemTotalCallback' => static fn (): int => count($items),
-            'sliceCallback'     => static fn (int $offset, int $length): array => array_slice($items, $offset, $length),
-            'itemsPerPage'      => 15,
-            'pagesInRange'      => 5,
-        ]);
-
-        $pagination = $paginator->paginate();
-
-        self::assertCount(15, $pagination);
-
-        $iterations = 0;
-
-        foreach ($pagination as $i => $item) {
-            self::assertSame($i, $item);
-
-            ++$iterations;
-        }
-
-        self::assertSame(15, $iterations);
-    }
-
-    public function testPaginateLowVolume(): void
-    {
-        $items = range(0, 27);
-
-        $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
-
-        $this->paginator->setItemTotalCallback(static function (Pagination $pagination) use ($items): int {
-            $pagination->setMeta(['meta_1']);
-
-            return count($items);
-        });
-
-        $this->paginator->setSliceCallback(static function (int $offset, int $length, Pagination $pagination) use ($items): array {
-            $pagination->setMeta(array_merge($pagination->getMeta(), ['meta_2']));
-
-            return array_slice($items, $offset, $length);
-        });
-
-        $pagination = $this->paginator->paginate();
-
-        self::assertContains('meta_1', $pagination->getMeta());
-        self::assertContains('meta_2', $pagination->getMeta());
-
-        self::assertCount(10, $pagination->getItems());
-        self::assertCount(3, $pagination->getPages());
-
-        self::assertSame(3, $pagination->getTotalNumberOfPages());
-        self::assertSame(1, $pagination->getCurrentPageNumber());
-        self::assertSame(1, $pagination->getFirstPageNumber());
-        self::assertSame(3, $pagination->getLastPageNumber());
-
-        self::assertNull($pagination->getPreviousPageNumber());
-
-        self::assertSame(2, $pagination->getNextPageNumber());
-        self::assertSame(10, $pagination->getItemsPerPage());
-        self::assertSame(28, $pagination->getTotalNumberOfItems());
-        self::assertSame(1, $pagination->getFirstPageNumberInRange());
-        self::assertSame(3, $pagination->getLastPageNumberInRange());
-
-        // Increment page
-        $pagination = $this->paginator->paginate(2);
-
-        self::assertCount(10, $pagination->getItems());
-        self::assertCount(3, $pagination->getPages());
-
-        self::assertSame(3, $pagination->getTotalNumberOfPages());
-        self::assertSame(2, $pagination->getCurrentPageNumber());
-        self::assertSame(1, $pagination->getFirstPageNumber());
-        self::assertSame(3, $pagination->getLastPageNumber());
-        self::assertSame(1, $pagination->getPreviousPageNumber());
-        self::assertSame(3, $pagination->getNextPageNumber());
-        self::assertSame(10, $pagination->getItemsPerPage());
-        self::assertSame(28, $pagination->getTotalNumberOfItems());
-        self::assertSame(1, $pagination->getFirstPageNumberInRange());
-        self::assertSame(3, $pagination->getLastPageNumberInRange());
-
-        // Increment page
-        $pagination = $this->paginator->paginate(3);
-
-        self::assertCount(8, $pagination->getItems());
-        self::assertCount(3, $pagination->getPages());
-
-        self::assertSame(3, $pagination->getTotalNumberOfPages());
-        self::assertSame(3, $pagination->getCurrentPageNumber());
-        self::assertSame(1, $pagination->getFirstPageNumber());
-        self::assertSame(3, $pagination->getLastPageNumber());
-        self::assertSame(2, $pagination->getPreviousPageNumber());
-
-        self::assertNull($pagination->getNextPageNumber());
-
-        self::assertSame(10, $pagination->getItemsPerPage());
-        self::assertSame(28, $pagination->getTotalNumberOfItems());
-        self::assertSame(1, $pagination->getFirstPageNumberInRange());
-        self::assertSame(3, $pagination->getLastPageNumberInRange());
-
-        self::assertContains('meta_1', $pagination->getMeta());
-        self::assertContains('meta_2', $pagination->getMeta());
     }
 
     public function testPaginateHighVolume(): void
@@ -600,13 +401,13 @@ class PaginatorTest extends TestCase
         $this->paginator->setItemTotalCallback(static function (Pagination $pagination) use ($items): int {
             $pagination->setMeta(['meta_3']);
 
-            return count($items);
+            return \count($items);
         });
 
         $this->paginator->setSliceCallback(static function (int $offset, int $length, Pagination $pagination) use ($items): array {
             $pagination->setMeta(array_merge($pagination->getMeta(), ['meta_4']));
 
-            return array_slice($items, $offset, $length);
+            return \array_slice($items, $offset, $length);
         });
 
         $pagination = $this->paginator->paginate();
@@ -679,13 +480,13 @@ class PaginatorTest extends TestCase
         $this->paginator->setItemTotalCallback(static function (Pagination $pagination) use ($items): int {
             $pagination->setMeta(['meta_3']);
 
-            return count($items);
+            return \count($items);
         });
 
         $this->paginator->setSliceCallback(static function (int $offset, int $length, Pagination $pagination) use ($items): array {
             $pagination->setMeta(array_merge($pagination->getMeta(), ['meta_4']));
 
-            return array_slice($items, $offset, $length);
+            return \array_slice($items, $offset, $length);
         });
 
         $pagination = $this->paginator->paginate();
@@ -749,13 +550,158 @@ class PaginatorTest extends TestCase
         self::assertContains('meta_4', $pagination->getMeta());
     }
 
+    public function testPaginateLowVolume(): void
+    {
+        $items = range(0, 27);
+
+        $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
+
+        $this->paginator->setItemTotalCallback(static function (Pagination $pagination) use ($items): int {
+            $pagination->setMeta(['meta_1']);
+
+            return \count($items);
+        });
+
+        $this->paginator->setSliceCallback(static function (int $offset, int $length, Pagination $pagination) use ($items): array {
+            $pagination->setMeta(array_merge($pagination->getMeta(), ['meta_2']));
+
+            return \array_slice($items, $offset, $length);
+        });
+
+        $pagination = $this->paginator->paginate();
+
+        self::assertContains('meta_1', $pagination->getMeta());
+        self::assertContains('meta_2', $pagination->getMeta());
+
+        self::assertCount(10, $pagination->getItems());
+        self::assertCount(3, $pagination->getPages());
+
+        self::assertSame(3, $pagination->getTotalNumberOfPages());
+        self::assertSame(1, $pagination->getCurrentPageNumber());
+        self::assertSame(1, $pagination->getFirstPageNumber());
+        self::assertSame(3, $pagination->getLastPageNumber());
+
+        self::assertNull($pagination->getPreviousPageNumber());
+
+        self::assertSame(2, $pagination->getNextPageNumber());
+        self::assertSame(10, $pagination->getItemsPerPage());
+        self::assertSame(28, $pagination->getTotalNumberOfItems());
+        self::assertSame(1, $pagination->getFirstPageNumberInRange());
+        self::assertSame(3, $pagination->getLastPageNumberInRange());
+
+        // Increment page
+        $pagination = $this->paginator->paginate(2);
+
+        self::assertCount(10, $pagination->getItems());
+        self::assertCount(3, $pagination->getPages());
+
+        self::assertSame(3, $pagination->getTotalNumberOfPages());
+        self::assertSame(2, $pagination->getCurrentPageNumber());
+        self::assertSame(1, $pagination->getFirstPageNumber());
+        self::assertSame(3, $pagination->getLastPageNumber());
+        self::assertSame(1, $pagination->getPreviousPageNumber());
+        self::assertSame(3, $pagination->getNextPageNumber());
+        self::assertSame(10, $pagination->getItemsPerPage());
+        self::assertSame(28, $pagination->getTotalNumberOfItems());
+        self::assertSame(1, $pagination->getFirstPageNumberInRange());
+        self::assertSame(3, $pagination->getLastPageNumberInRange());
+
+        // Increment page
+        $pagination = $this->paginator->paginate(3);
+
+        self::assertCount(8, $pagination->getItems());
+        self::assertCount(3, $pagination->getPages());
+
+        self::assertSame(3, $pagination->getTotalNumberOfPages());
+        self::assertSame(3, $pagination->getCurrentPageNumber());
+        self::assertSame(1, $pagination->getFirstPageNumber());
+        self::assertSame(3, $pagination->getLastPageNumber());
+        self::assertSame(2, $pagination->getPreviousPageNumber());
+
+        self::assertNull($pagination->getNextPageNumber());
+
+        self::assertSame(10, $pagination->getItemsPerPage());
+        self::assertSame(28, $pagination->getTotalNumberOfItems());
+        self::assertSame(1, $pagination->getFirstPageNumberInRange());
+        self::assertSame(3, $pagination->getLastPageNumberInRange());
+
+        self::assertContains('meta_1', $pagination->getMeta());
+        self::assertContains('meta_2', $pagination->getMeta());
+    }
+
+    public function testPaginateLowVolumeConstructorConfig(): void
+    {
+        $items = range(0, 27);
+
+        $paginator = new Paginator([
+            'itemTotalCallback' => static fn (): int => \count($items),
+            'sliceCallback'     => static fn (int $offset, int $length): array => \array_slice($items, $offset, $length),
+            'itemsPerPage'      => 10,
+            'pagesInRange'      => 5,
+        ]);
+
+        $pagination = $paginator->paginate();
+
+        self::assertCount(10, $pagination->getItems());
+        self::assertCount(3, $pagination->getPages());
+
+        self::assertSame(3, $pagination->getTotalNumberOfPages());
+        self::assertSame(1, $pagination->getCurrentPageNumber());
+        self::assertSame(1, $pagination->getFirstPageNumber());
+        self::assertSame(3, $pagination->getLastPageNumber());
+
+        self::assertNull($pagination->getPreviousPageNumber());
+
+        self::assertSame(2, $pagination->getNextPageNumber());
+        self::assertSame(10, $pagination->getItemsPerPage());
+        self::assertSame(28, $pagination->getTotalNumberOfItems());
+        self::assertSame(1, $pagination->getFirstPageNumberInRange());
+        self::assertSame(3, $pagination->getLastPageNumberInRange());
+
+        // Increment page
+        $pagination = $paginator->paginate(2);
+
+        self::assertCount(10, $pagination->getItems());
+        self::assertCount(3, $pagination->getPages());
+
+        self::assertSame(3, $pagination->getTotalNumberOfPages());
+        self::assertSame(2, $pagination->getCurrentPageNumber());
+        self::assertSame(1, $pagination->getFirstPageNumber());
+        self::assertSame(3, $pagination->getLastPageNumber());
+        self::assertSame(1, $pagination->getPreviousPageNumber());
+        self::assertSame(3, $pagination->getNextPageNumber());
+        self::assertSame(10, $pagination->getItemsPerPage());
+        self::assertSame(28, $pagination->getTotalNumberOfItems());
+        self::assertSame(1, $pagination->getFirstPageNumberInRange());
+        self::assertSame(3, $pagination->getLastPageNumberInRange());
+
+        // Increment page
+        $pagination = $paginator->paginate(3);
+
+        self::assertCount(8, $pagination->getItems());
+        self::assertCount(3, $pagination->getPages());
+
+        self::assertSame(3, $pagination->getTotalNumberOfPages());
+        self::assertSame(3, $pagination->getCurrentPageNumber());
+        self::assertSame(1, $pagination->getFirstPageNumber());
+        self::assertSame(3, $pagination->getLastPageNumber());
+        self::assertSame(2, $pagination->getPreviousPageNumber());
+
+        self::assertNull($pagination->getNextPageNumber());
+
+        self::assertSame(10, $pagination->getItemsPerPage());
+        self::assertSame(28, $pagination->getTotalNumberOfItems());
+        self::assertSame(1, $pagination->getFirstPageNumberInRange());
+        self::assertSame(3, $pagination->getLastPageNumberInRange());
+    }
+
     public function testPaginationIterator(): void
     {
         $items = range(0, 27);
 
         $paginator = new Paginator([
-            'itemTotalCallback' => static fn (): int => count($items),
-            'sliceCallback'     => static fn (int $offset, int $length): ArrayIterator => new ArrayIterator(array_slice($items, $offset, $length)),
+            'itemTotalCallback' => static fn (): int => \count($items),
+            'sliceCallback'     => static fn (int $offset, int $length): ArrayIterator => new ArrayIterator(\array_slice($items, $offset, $length)),
             'itemsPerPage'      => 15,
             'pagesInRange'      => 5,
         ]);
@@ -769,14 +715,66 @@ class PaginatorTest extends TestCase
         }
     }
 
-    public function testItemTotalCallbackNotFound(): void
+    public function testPaginationIteratorAggregate(): void
     {
-        $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
+        $items = range(0, 27);
 
-        $this->expectException(CallbackNotFoundException::class);
-        $this->paginator->setItemTotalCallback(null);
+        $paginator = new Paginator([
+            'itemTotalCallback' => static fn (): int => \count($items),
+            'sliceCallback'     => static fn (int $offset, int $length): array => \array_slice($items, $offset, $length),
+            'itemsPerPage'      => 15,
+            'pagesInRange'      => 5,
+        ]);
+
+        $pagination = $paginator->paginate();
+
+        self::assertCount(15, $pagination);
+
+        $iterations = 0;
+
+        foreach ($pagination as $i => $item) {
+            self::assertSame($i, $item);
+
+            ++$iterations;
+        }
+
+        self::assertSame(15, $iterations);
+    }
+
+    public function testSetItemsPerPage(): void
+    {
+        $this->paginator->setItemsPerPage(45);
+
+        self::assertSame(45, $this->paginator->getItemsPerPage());
+    }
+
+    public function testSetItemTotalCallback(): void
+    {
+        $this->paginator->setItemTotalCallback(static fn (): string => 'item_total_callback');
+
+        $callback = $this->paginator->getItemTotalCallback();
+
+        self::assertInstanceOf('\Closure', $callback);
+
+        self::assertSame('item_total_callback', $callback());
+    }
+
+    public function testSetPagesInRange(): void
+    {
+        $this->paginator->setPagesInRange(23);
+
+        self::assertSame(23, $this->paginator->getPagesInRange());
+    }
+
+    public function testSetSliceCallback(): void
+    {
         $this->paginator->setSliceCallback(static fn (): string => 'slice_callback');
-        $this->paginator->paginate();
+
+        $callback = $this->paginator->getSliceCallback();
+
+        self::assertInstanceOf('\Closure', $callback);
+
+        self::assertSame('slice_callback', $callback());
     }
 
     public function testSliceCallbackNotFound(): void

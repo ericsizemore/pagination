@@ -47,8 +47,6 @@ use Iterator;
 
 use function array_filter;
 use function ceil;
-use function in_array;
-use function is_int;
 use function iterator_to_array;
 use function max;
 use function min;
@@ -60,19 +58,14 @@ use const ARRAY_FILTER_USE_BOTH;
 /**
  * Main Paginator Class.
  *
- * @see \Esi\Pagination\Tests\PaginatorTest
+ * @see Tests\PaginatorTest
  */
 class Paginator implements PaginatorInterface
 {
     /**
-     * A callback that is used to determine the total number of items in your collection (returned as an integer).
+     * A callback to run after the count and slice queries.
      */
-    private ?Closure $itemTotalCallback = null;
-
-    /**
-     * A callback to slice your collection given an offset and length argument.
-     */
-    private ?Closure $sliceCallback = null;
+    private ?Closure $afterQueryCallback = null;
 
     /**
      * A callback to run before the count and slice queries.
@@ -80,19 +73,23 @@ class Paginator implements PaginatorInterface
     private ?Closure $beforeQueryCallback = null;
 
     /**
-     * A callback to run after the count and slice queries.
-     */
-    private ?Closure $afterQueryCallback = null;
-
-    /**
      * Number of items to include per page.
      */
     private int $itemsPerPage = 10;
+    /**
+     * A callback that is used to determine the total number of items in your collection (returned as an integer).
+     */
+    private ?Closure $itemTotalCallback = null;
 
     /**
      * Number of pages in range.
      */
     private int $pagesInRange = 5;
+
+    /**
+     * A callback to slice your collection given an offset and length argument.
+     */
+    private ?Closure $sliceCallback = null;
 
     /**
      * Constructor - passing optional configuration.
@@ -129,6 +126,60 @@ class Paginator implements PaginatorInterface
         $this->setSliceCallback($config['sliceCallback']);
         $this->setItemsPerPage($config['itemsPerPage']);
         $this->setPagesInRange($config['pagesInRange']);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[\Override]
+    public function getAfterQueryCallback(): ?Closure
+    {
+        return $this->afterQueryCallback;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[\Override]
+    public function getBeforeQueryCallback(): ?Closure
+    {
+        return $this->beforeQueryCallback;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[\Override]
+    public function getItemsPerPage(): int
+    {
+        return $this->itemsPerPage;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[\Override]
+    public function getItemTotalCallback(): ?Closure
+    {
+        return $this->itemTotalCallback;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[\Override]
+    public function getPagesInRange(): int
+    {
+        return $this->pagesInRange;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[\Override]
+    public function getSliceCallback(): ?Closure
+    {
+        return $this->sliceCallback;
     }
 
     /**
@@ -174,7 +225,7 @@ class Paginator implements PaginatorInterface
         $beforeQueryCallback($this, $pagination);
 
         if (-1 === $this->itemsPerPage) {
-            $items = $sliceCallback(0, 999999999, $pagination);
+            $items = $sliceCallback(0, 999_999_999, $pagination);
         } else {
             $items = $sliceCallback($offset, $this->itemsPerPage, $pagination);
         }
@@ -211,49 +262,11 @@ class Paginator implements PaginatorInterface
      * @inheritDoc
      */
     #[\Override]
-    public function getItemTotalCallback(): ?Closure
+    public function setAfterQueryCallback(?Closure $afterQueryCallback): static
     {
-        return $this->itemTotalCallback;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    #[\Override]
-    public function setItemTotalCallback(?Closure $itemTotalCallback): static
-    {
-        $this->itemTotalCallback = $itemTotalCallback;
+        $this->afterQueryCallback = $afterQueryCallback;
 
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    #[\Override]
-    public function getSliceCallback(): ?Closure
-    {
-        return $this->sliceCallback;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    #[\Override]
-    public function setSliceCallback(?Closure $sliceCallback): static
-    {
-        $this->sliceCallback = $sliceCallback;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    #[\Override]
-    public function getBeforeQueryCallback(): ?Closure
-    {
-        return $this->beforeQueryCallback;
     }
 
     /**
@@ -271,35 +284,6 @@ class Paginator implements PaginatorInterface
      * @inheritDoc
      */
     #[\Override]
-    public function getAfterQueryCallback(): ?Closure
-    {
-        return $this->afterQueryCallback;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    #[\Override]
-    public function setAfterQueryCallback(?Closure $afterQueryCallback): static
-    {
-        $this->afterQueryCallback = $afterQueryCallback;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    #[\Override]
-    public function getItemsPerPage(): int
-    {
-        return $this->itemsPerPage;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    #[\Override]
     public function setItemsPerPage(int $itemsPerPage): static
     {
         $this->itemsPerPage = $itemsPerPage;
@@ -311,9 +295,11 @@ class Paginator implements PaginatorInterface
      * @inheritDoc
      */
     #[\Override]
-    public function getPagesInRange(): int
+    public function setItemTotalCallback(?Closure $itemTotalCallback): static
     {
-        return $this->pagesInRange;
+        $this->itemTotalCallback = $itemTotalCallback;
+
+        return $this;
     }
 
     /**
@@ -328,39 +314,29 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * Helper function for __construct() to validate the passed $config.
-     *
-     * @param null|array{}|array{
-     *     itemTotalCallback: Closure,
-     *     sliceCallback: Closure,
-     *     itemsPerPage: int,
-     *     pagesInRange: int
-     * } $config Expected array signature.
-     *
-     * @return array{}|array{
-     *     itemTotalCallback: Closure,
-     *     sliceCallback: Closure,
-     *     itemsPerPage: int,
-     *     pagesInRange: int
-     * }
+     * @inheritDoc
      */
-    protected static function validateConfig(?array $config = null): array
+    #[\Override]
+    public function setSliceCallback(?Closure $sliceCallback): static
     {
-        static $validKeys = ['itemTotalCallback', 'sliceCallback', 'itemsPerPage', 'pagesInRange'];
+        $this->sliceCallback = $sliceCallback;
 
-        $config ??= [];
+        return $this;
+    }
 
-        return array_filter($config, static function (mixed $value, string $key) use ($validKeys): bool {
-            if (!in_array($key, $validKeys, true)) {
-                return false;
-            }
+    /**
+     * A helper function to {@see self::paginate()}.
+     *
+     * Ensures the afterQueryCallback is a valid Closure. If the currently set
+     * afterQueryCallback is null, it will return an empty Closure object.
+     */
+    protected function prepareAfterQueryCallback(): Closure
+    {
+        if ($this->afterQueryCallback instanceof Closure) {
+            return $this->afterQueryCallback;
+        }
 
-            return match($key) {
-                'itemTotalCallback', 'sliceCallback' => $value instanceof Closure,
-                default => is_int($value)
-            };
-        }, ARRAY_FILTER_USE_BOTH);
-
+        return static function (): void {};
     }
 
     /**
@@ -381,16 +357,15 @@ class Paginator implements PaginatorInterface
     /**
      * A helper function to {@see self::paginate()}.
      *
-     * Ensures the afterQueryCallback is a valid Closure. If the currently set
-     * afterQueryCallback is null, it will return an empty Closure object.
+     * Determines the next page number based on the current page number.
      */
-    protected function prepareAfterQueryCallback(): Closure
+    protected static function determineNextPageNumber(int $currentPageNumber, int $numberOfPages): ?int
     {
-        if ($this->afterQueryCallback instanceof Closure) {
-            return $this->afterQueryCallback;
+        if (($currentPageNumber + 1) <= $numberOfPages) {
+            return $currentPageNumber + 1;
         }
 
-        return static function (): void {};
+        return null;
     }
 
     /**
@@ -434,16 +409,38 @@ class Paginator implements PaginatorInterface
     }
 
     /**
-     * A helper function to {@see self::paginate()}.
+     * Helper function for __construct() to validate the passed $config.
      *
-     * Determines the next page number based on the current page number.
+     * @param null|array{}|array{
+     *     itemTotalCallback: Closure,
+     *     sliceCallback: Closure,
+     *     itemsPerPage: int,
+     *     pagesInRange: int
+     * } $config Expected array signature.
+     *
+     * @return array{}|array{
+     *     itemTotalCallback: Closure,
+     *     sliceCallback: Closure,
+     *     itemsPerPage: int,
+     *     pagesInRange: int
+     * }
      */
-    protected static function determineNextPageNumber(int $currentPageNumber, int $numberOfPages): ?int
+    protected static function validateConfig(?array $config = null): array
     {
-        if (($currentPageNumber + 1) <= $numberOfPages) {
-            return $currentPageNumber + 1;
-        }
+        static $validKeys = ['itemTotalCallback', 'sliceCallback', 'itemsPerPage', 'pagesInRange'];
 
-        return null;
+        $config ??= [];
+
+        return array_filter($config, static function (mixed $value, string $key) use ($validKeys): bool {
+            if (!\in_array($key, $validKeys, true)) {
+                return false;
+            }
+
+            return match($key) {
+                'itemTotalCallback', 'sliceCallback' => $value instanceof Closure,
+                default => \is_int($value)
+            };
+        }, ARRAY_FILTER_USE_BOTH);
+
     }
 }
