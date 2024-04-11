@@ -75,6 +75,11 @@
             "Esi\\Pagination\\Tests\\": "tests/"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "2.0.x-dev"
