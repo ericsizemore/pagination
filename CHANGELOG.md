@@ -14,6 +14,9 @@ Mostly small coding standard (CS) related changes, with some improvements to met
 #### Changed
 
   * Updated `composer.lock`
+  * Updated dev-dependencies.
+  * Updated the header docblock in source files to be more compact, reduce filesize.
+  * Updated coding standards via PHP-CS-Fixer and applied changes to source files.
 
 #### Added
 
