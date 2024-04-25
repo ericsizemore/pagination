@@ -181,7 +181,7 @@ class PaginatorTest extends TestCase
             /** @var PDOStatement $result */
             $result = self::$dbObj->query("SELECT COUNT(*) as totalCount FROM facts");
             /** @var string $row */
-            $row    = $result->fetchColumn();
+            $row = $result->fetchColumn();
 
             return (int) $row;
         });

@@ -29,9 +29,10 @@ use IteratorAggregate;
  * Pagination class.
  *
  * @implements IteratorAggregate<(int|string), int>
+ *
  * @psalm-api
  */
-class Pagination implements IteratorAggregate, Countable
+class Pagination implements Countable, IteratorAggregate
 {
     /**
      * Current page number of item collection.

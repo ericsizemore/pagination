@@ -422,7 +422,7 @@ class Paginator implements PaginatorInterface
          * @var null|array<string>
          */
         static $validKeys;
-     
+
         $validKeys ??= ['itemTotalCallback', 'sliceCallback', 'itemsPerPage', 'pagesInRange'];
 
         $config ??= [];

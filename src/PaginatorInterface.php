@@ -27,6 +27,7 @@ use Esi\Pagination\Exception\InvalidPageNumberException;
 
 /**
  * Interface PaginatorInterface.
+ *
  * @psalm-api
  */
 interface PaginatorInterface
@@ -66,10 +67,10 @@ interface PaginatorInterface
      *
      * @param int $currentPageNumber Page number, usually passed from the current request.
      *
-     * @return Pagination Collection of items returned by the slice callback with pagination meta information.
-     *
      * @throws CallbackNotFoundException
      * @throws InvalidPageNumberException
+     *
+     * @return Pagination Collection of items returned by the slice callback with pagination meta information.
      */
     public function paginate(int $currentPageNumber = 1): Pagination;
 
