@@ -1,0 +1,11 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+			count: 2
+			path: tests/PaginatorTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$config of class Esi\\\\Pagination\\\\Paginator constructor expects array\\{\\}\\|array\\{itemTotalCallback\\?\\: Closure, sliceCallback\\?\\: Closure, itemsPerPage\\?\\: int, pagesInRange\\?\\: int\\}\\|null, array\\{itemTotalCallback\\: '', sliceCallback\\: '', itemsPerPage\\: '', pagesInRange\\: '', nonexistent\\: ''\\} given\\.$#"
+			count: 1
+			path: tests/PaginatorTest.php

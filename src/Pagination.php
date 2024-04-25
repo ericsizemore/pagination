@@ -29,23 +29,25 @@ use IteratorAggregate;
  * Pagination class.
  *
  * @implements IteratorAggregate<(int|string), int>
+ * @psalm-api
  */
 class Pagination implements IteratorAggregate, Countable
 {
     /**
      * Current page number of item collection.
      */
-    private int $currentPageNumber;
+    private int $currentPageNumber = 0;
 
     /**
      * First page number of item collection.
      */
-    private int $firstPageNumber;
+    private int $firstPageNumber = 0;
 
     /**
      * Given a page range, first page number.
      */
-    private int $firstPageNumberInRange;
+    private int $firstPageNumberInRange = 0;
+
     /**
      * Item collection.
      *
@@ -56,24 +58,24 @@ class Pagination implements IteratorAggregate, Countable
     /**
      * Currently set amount of items we want per page.
      */
-    private int $itemsPerPage;
+    private int $itemsPerPage = 10;
 
     /**
      * Last page number of item collection.
      */
-    private int $lastPageNumber;
+    private int $lastPageNumber = 0;
 
     /**
      * Given a page range, last page number.
      */
-    private int $lastPageNumberInRange;
+    private int $lastPageNumberInRange = 0;
 
     /**
      * Optional meta data to include with pagination.
      *
      * @var array<int|string, string>|array<mixed>
      */
-    private array $meta;
+    private array $meta = [];
 
     /**
      * Next page number. Will be null if on the last page.
@@ -95,12 +97,12 @@ class Pagination implements IteratorAggregate, Countable
     /**
      * Total number of items in the collection.
      */
-    private int $totalNumberOfItems;
+    private int $totalNumberOfItems = 0;
 
     /**
      * Total number of pages for the item collection.
      */
-    private int $totalNumberOfPages;
+    private int $totalNumberOfPages = 0;
 
     /**
      * @inheritDoc

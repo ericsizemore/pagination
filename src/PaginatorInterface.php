@@ -27,6 +27,7 @@ use Esi\Pagination\Exception\InvalidPageNumberException;
 
 /**
  * Interface PaginatorInterface.
+ * @psalm-api
  */
 interface PaginatorInterface
 {

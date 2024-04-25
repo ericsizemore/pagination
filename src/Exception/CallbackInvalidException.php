@@ -25,5 +25,6 @@ use RuntimeException;
 
 /**
  * Class CallbackInvalidException.
+ * @psalm-api
  */
 class CallbackInvalidException extends RuntimeException {}

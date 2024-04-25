@@ -90,10 +90,10 @@ class Paginator implements PaginatorInterface
      * </code>
      *
      * @param null|array{}|array{
-     *     itemTotalCallback: Closure,
-     *     sliceCallback: Closure,
-     *     itemsPerPage: int,
-     *     pagesInRange: int
+     *     itemTotalCallback?: Closure,
+     *     sliceCallback?: Closure,
+     *     itemsPerPage?: int,
+     *     pagesInRange?: int
      * } $config
      */
     public function __construct(?array $config = null)
@@ -104,10 +104,10 @@ class Paginator implements PaginatorInterface
             return;
         }
 
-        $this->setItemTotalCallback($config['itemTotalCallback']);
-        $this->setSliceCallback($config['sliceCallback']);
-        $this->setItemsPerPage($config['itemsPerPage']);
-        $this->setPagesInRange($config['pagesInRange']);
+        $this->setItemTotalCallback($config['itemTotalCallback'] ?? static function (): void {});
+        $this->setSliceCallback($config['sliceCallback'] ?? static function (): void {});
+        $this->setItemsPerPage($config['itemsPerPage'] ?? 10);
+        $this->setPagesInRange($config['pagesInRange'] ?? 5);
     }
 
     /**
@@ -207,12 +207,21 @@ class Paginator implements PaginatorInterface
         $beforeQueryCallback($this, $pagination);
 
         if (-1 === $this->itemsPerPage) {
+            /**
+             * @psalm-var array<array-key, int>|Iterator $items
+             */
             $items = $sliceCallback(0, 999_999_999, $pagination);
         } else {
+            /**
+             * @psalm-var array<array-key, int>|Iterator $items
+             */
             $items = $sliceCallback($offset, $this->itemsPerPage, $pagination);
         }
 
         if ($items instanceof Iterator) {
+            /**
+             * @psalm-var array<array-key, int> $items
+             */
             $items = iterator_to_array($items);
         }
 
@@ -394,22 +403,27 @@ class Paginator implements PaginatorInterface
      * Helper function for __construct() to validate the passed $config.
      *
      * @param null|array{}|array{
-     *     itemTotalCallback: Closure,
-     *     sliceCallback: Closure,
-     *     itemsPerPage: int,
-     *     pagesInRange: int
+     *     itemTotalCallback?: Closure,
+     *     sliceCallback?: Closure,
+     *     itemsPerPage?: int,
+     *     pagesInRange?: int
      * } $config Expected array signature.
      *
      * @return array{}|array{
-     *     itemTotalCallback: Closure,
-     *     sliceCallback: Closure,
-     *     itemsPerPage: int,
-     *     pagesInRange: int
+     *     itemTotalCallback?: Closure,
+     *     sliceCallback?: Closure,
+     *     itemsPerPage?: int,
+     *     pagesInRange?: int
      * }
      */
     protected static function validateConfig(?array $config = null): array
     {
-        static $validKeys = ['itemTotalCallback', 'sliceCallback', 'itemsPerPage', 'pagesInRange'];
+        /**
+         * @var null|array<string>
+         */
+        static $validKeys;
+     
+        $validKeys ??= ['itemTotalCallback', 'sliceCallback', 'itemsPerPage', 'pagesInRange'];
 
         $config ??= [];
 

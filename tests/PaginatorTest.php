@@ -92,14 +92,14 @@ class PaginatorTest extends TestCase
 
         $paginator->paginate();
 
-        self::assertTrue($beforeQueryFired); // @phpstan-ignore-line
-        self::assertTrue($afterQueryFired); // @phpstan-ignore-line
+        self::assertTrue($beforeQueryFired);
+        self::assertTrue($afterQueryFired);
 
         $beforeCallback = $paginator->getBeforeQueryCallback();
         $afterCallback  = $paginator->getAfterQueryCallback();
 
-        self::assertInstanceOf('\Closure', $beforeCallback);
-        self::assertInstanceOf('\Closure', $afterCallback);
+        self::assertInstanceOf(\Closure::class, $beforeCallback);
+        self::assertInstanceOf(\Closure::class, $afterCallback);
 
         self::assertNull($beforeCallback());
         self::assertNull($afterCallback());
@@ -137,7 +137,6 @@ class PaginatorTest extends TestCase
      */
     public function testConstructionWithInvalidConfig(): void
     {
-        // @phpstan-ignore-next-line
         $paginator = new Paginator([
             'itemTotalCallback' => '',
             'sliceCallback'     => '',
@@ -181,7 +180,9 @@ class PaginatorTest extends TestCase
         $paginator->setItemTotalCallback(static function (): int {
             /** @var PDOStatement $result */
             $result = self::$dbObj->query("SELECT COUNT(*) as totalCount FROM facts");
+            /** @var string $row */
             $row    = $result->fetchColumn();
+
             return (int) $row;
         });
 
@@ -735,7 +736,7 @@ class PaginatorTest extends TestCase
 
         $callback = $this->paginator->getItemTotalCallback();
 
-        self::assertInstanceOf('\Closure', $callback);
+        self::assertInstanceOf(\Closure::class, $callback);
 
         self::assertSame('item_total_callback', $callback());
     }
@@ -753,7 +754,7 @@ class PaginatorTest extends TestCase
 
         $callback = $this->paginator->getSliceCallback();
 
-        self::assertInstanceOf('\Closure', $callback);
+        self::assertInstanceOf(\Closure::class, $callback);
 
         self::assertSame('slice_callback', $callback());
     }

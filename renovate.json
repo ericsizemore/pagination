@@ -2,5 +2,15 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
-  ]
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "extends": [
+      "schedule:weekly"
+    ]
+  },
+  "labels": [
+    "dependency"
+  ],
+  "commitMessagePrefix": "chore(deps)"
 }
