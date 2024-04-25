@@ -6,7 +6,9 @@ Pagination
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ericsizemore/pagination/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ericsizemore/pagination/?branch=master)
 [![Tests](https://github.com/ericsizemore/pagination/actions/workflows/tests.yml/badge.svg)](https://github.com/ericsizemore/pagination/actions/workflows/tests.yml)
 [![PHPStan](https://github.com/ericsizemore/pagination/actions/workflows/main.yml/badge.svg)](https://github.com/ericsizemore/pagination/actions/workflows/main.yml)
-
+[![Psalm Static analysis](https://github.com/ericsizemore/pagination/actions/workflows/psalm.yml/badge.svg?branch=master)](https://github.com/ericsizemore/pagination/actions/workflows/psalm.yml)
+[![Type Coverage](https://shepherd.dev/github/ericsizemore/pagination/coverage.svg)](https://shepherd.dev/github/ericsizemore/pagination)
+[![Psalm Level](https://shepherd.dev/github/ericsizemore/pagination/level.svg)](https://shepherd.dev/github/ericsizemore/pagination)
 [![Latest Stable Version](https://img.shields.io/packagist/v/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
 [![Downloads per Month](https://img.shields.io/packagist/dm/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
 [![License](https://img.shields.io/packagist/l/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
