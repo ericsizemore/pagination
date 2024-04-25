@@ -12,9 +12,9 @@ Further restrictions (and/or allowances) might be added in the future.
 
 | **Document Information** |            |
 |:-------------------------|:-----------|
-| **Effective Date**       | 03/26/2024 |
-| **Last Updated**         | 04/22/2024 |
-| **Version**              | 1.0.1      |
+| **Effective Date**       | 04/25/2024 |
+| **Last Updated**         | 04/25/2024 |
+| **Version**              | 1.0.0      |
 
 ## Semantic Versioning
 
@@ -94,7 +94,7 @@ In very rare cases I may delete a tag in order to remove a broken release. The n
 
 ### Branches
 
-Branches in this project's Git repository are private implementation details. For example, I delete branches for versions of PHPUnit Coverage Check that are no longer supported. In general:
+Branches in this project's Git repository are private implementation details. For example, I delete branches for versions of Pagination that are no longer supported. In general:
 
 * The `master` branch will contain the currently released major version (and `<minor>` or `<patch>` versions that fall under it).
 * Previous major versions will be under a `<major>.x` branch.
