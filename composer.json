@@ -52,11 +52,11 @@
         "php": "^8.2 <8.5"
     },
     "require-dev": {
-        "esi/phpunit-coverage-check": "^2.0",
         "ext-pdo": "*",
         "ext-pdo_sqlite": "*",
+        "esi/phpunit-coverage-check": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.58",
-        "phpstan/extension-installer": "^1.2",
+        "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-deprecation-rules": "^1.2",
         "phpstan/phpstan-phpunit": "^1.4",
@@ -89,8 +89,8 @@
     },
     "scripts": {
         "coverage-check": "vendor/bin/coverage-check build/logs/clover.xml 100",
-        "cs:fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "cs:check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff",
+        "cs:fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon",
         "psalm": "vendor/bin/psalm --no-diff --use-baseline=psalm-baseline.xml",
         "psalm:ci": "vendor/bin/psalm --no-diff --long-progress --output-format=github --use-baseline=psalm-baseline.xml",
