@@ -72,7 +72,7 @@ class Pagination implements Countable, IteratorAggregate
     private int $lastPageNumberInRange = 0;
 
     /**
-     * Optional meta data to include with pagination.
+     * Optional metadata to include with pagination.
      *
      * @var array<int|string, string>|array<mixed>
      */

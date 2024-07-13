@@ -63,7 +63,7 @@ Forked from [`ashleydawson/simple-pagination`](https://github.com/AshleyDawson/S
 
   * Updated project namespaces to `Esi\Pagination`.
     * `lib` folder renamed to `src`
-  * Refactored the `Paginator::paginate()` function to reduce it's complexity. Uses new helper functions.
+  * Refactored the `Paginator::paginate()` function to reduce its complexity. Uses new helper functions.
   * Updated composer.json
     * Bumped minimum PHP version to 8.2
     * Autoloading should follow PSR-4
@@ -84,7 +84,7 @@ Forked from [`ashleydawson/simple-pagination`](https://github.com/AshleyDawson/S
     * `determineNextPageNumber()`
   * dev-dependencies for PHP-CS-Fixer and PHPStan (w/extensions for phpunit, strict rules)
   * Imports for all used functions, constants, and class names.
-  * Github workflows for testing and static analysis.
+  * GitHub workflows for testing and static analysis.
   * Testing for DB related items (using SQLite via PDO and the [`factbook.db`](https://github.com/factbook/factbook.sql))
   * CHANGELOG.md, SECURITY.md
 

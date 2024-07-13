@@ -57,7 +57,7 @@ used to determine the total number of items in your collection (returned as an i
 The idea behind using these callbacks is so that Pagination is kept, well, simple! The real power comes with
 the flexibility. You can use Pagination with just about any collection you want. From simple arrays to database
 lists to [Doctrine](http://www.doctrine-project.org/) collections to [Solr](http://lucene.apache.org/solr/) result 
-sets - we've got you covered! It really doesn't matter what we paginate - as long as it's a collection of things and you 
+sets - we've got you covered! It really doesn't matter what we paginate - as long as it's a collection of things, and you 
 can count and slice it.
 
 ### Basic Usage
@@ -118,7 +118,7 @@ foreach ($pagination->getPages() as $page) {
 }
 ```
 
-There are lots of other pieces of meta data held within the [pagination object](#pagination-object). These can be used for building
+There are lots of other pieces of metadata held within the [pagination object](#pagination-object). These can be used for building
 first, last, previous and next buttons.
 
 ### MySQL Example
@@ -219,7 +219,7 @@ if (count($pagination) > 0) {
 ### Arbitrary Pagination Metadata
 
 During both item total and slice callbacks you have the option of passing arbitrary metadata to the pagination object. This is an optional feature
-and is useful if you have a use-case where additional data is returned by these operations and you want to access it from the pagination object whilst listing
+and is useful if you have a use-case where additional data is returned by these operations, and you want to access it from the pagination object whilst listing
 the items. A good example of this is when using search engines such as [ElasticSearch](https://www.elastic.co/elasticsearch), you can pass back secondary information - like aggregations, etc. A generic example can be seen below:
 
 ```php
@@ -251,7 +251,7 @@ $pagination = $paginator->paginate(filter_input(INPUT_GET, 'page', FILTER_VALIDA
 var_dump($pagination->getMeta());
 ```
 
-### Pre and Post Query Callbacks
+### Pre- and Post-Query Callbacks
 
 Before and after the count and slice queries, you can set callbacks to fire. To set them, do the following:
 
