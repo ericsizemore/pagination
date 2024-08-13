@@ -32,7 +32,6 @@ use function iterator_to_array;
 use function max;
 use function min;
 use function range;
-use function sprintf;
 
 use const ARRAY_FILTER_USE_BOTH;
 
@@ -184,7 +183,7 @@ class Paginator implements PaginatorInterface
 
         if ($currentPageNumber <= 0) {
             throw new InvalidPageNumberException(
-                sprintf('Current page number must have a value of 1 or more, %s given', $currentPageNumber)
+                \sprintf('Current page number must have a value of 1 or more, %s given', $currentPageNumber)
             );
         }
 

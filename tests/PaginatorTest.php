@@ -34,7 +34,6 @@ use PHPUnit\Framework\TestCase;
 
 use function array_merge;
 use function range;
-use function sprintf;
 
 /**
  * @internal
@@ -63,7 +62,7 @@ class PaginatorTest extends TestCase
         parent::setUp();
 
         $this->paginator = new Paginator();
-        self::$dbObj     = new PDO(sprintf('sqlite:%s/fixtures/factbook.db', __DIR__));
+        self::$dbObj     = new PDO(\sprintf('sqlite:%s/fixtures/factbook.db', __DIR__));
     }
 
     public function testBeforeAndAfterQueryCallbacks(): void
@@ -189,7 +188,7 @@ class PaginatorTest extends TestCase
         // Pass our slice callback.
         $paginator->setSliceCallback(static function (int $offset, int $length): array {
             /** @var PDOStatement $result */
-            $result     = self::$dbObj->query(sprintf('SELECT name, area FROM facts ORDER BY area DESC LIMIT %d, %d', $offset, $length), PDO::FETCH_ASSOC);
+            $result     = self::$dbObj->query(\sprintf('SELECT name, area FROM facts ORDER BY area DESC LIMIT %d, %d', $offset, $length), PDO::FETCH_ASSOC);
             $collection = [];
 
             foreach ($result as $row) {
