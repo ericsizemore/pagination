@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.2]
 
 Mostly small coding standard (CS) related changes, with some improvements to method docblocks throughout.
 
-### Added
+### Added - 2024-09-26
 
   * Added codecov.io into workflow.
   * Added issue templates and a pull request template.
@@ -21,6 +21,7 @@ Mostly small coding standard (CS) related changes, with some improvements to met
 
 ### Changed
 
+  * Bumped version to `2.0.2`.
   * Updated `composer.lock`
   * Updated dev-dependencies.
   * Updated the header docblock in source files to be more compact, reduce filesize.
@@ -93,5 +94,6 @@ Forked from [`ashleydawson/simple-pagination`](https://github.com/AshleyDawson/S
   * Documentation improvements.
 
 [unreleased]: https://github.com/ericsizemore/pagination/tree/master
+[2.0.2]: https://github.com/ericsizemore/pagination/releases/tag/v2.0.2
 [2.0.1]: https://github.com/ericsizemore/pagination/releases/tag/v2.0.1
 [2.0.0]: https://github.com/ericsizemore/pagination/releases/tag/v2.0.0
