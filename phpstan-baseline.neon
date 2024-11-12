@@ -1,11 +1,19 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: src/Paginator.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with false will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
 			count: 2
 			path: tests/PaginatorTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$config of class Esi\\\\Pagination\\\\Paginator constructor expects array\\{\\}\\|array\\{itemTotalCallback\\?\\: Closure, sliceCallback\\?\\: Closure, itemsPerPage\\?\\: int, pagesInRange\\?\\: int\\}\\|null, array\\{itemTotalCallback\\: '', sliceCallback\\: '', itemsPerPage\\: '', pagesInRange\\: '', nonexistent\\: ''\\} given\\.$#"
+			message: '#^Parameter \#1 \$config of class Esi\\Pagination\\Paginator constructor expects array\{\}\|array\{itemTotalCallback\?\: Closure, sliceCallback\?\: Closure, itemsPerPage\?\: int, pagesInRange\?\: int\}\|null, array\{itemTotalCallback\: '''', sliceCallback\: '''', itemsPerPage\: '''', pagesInRange\: '''', nonexistent\: ''''\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: tests/PaginatorTest.php
