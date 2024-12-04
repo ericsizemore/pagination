@@ -132,8 +132,6 @@ class PaginatorTest extends TestCase
         $paginator->paginate(0);
     }
 
-    /**
-     */
     public function testConstructionWithInvalidConfig(): void
     {
         $paginator = new Paginator([
@@ -178,7 +176,7 @@ class PaginatorTest extends TestCase
 
         $paginator->setItemTotalCallback(static function (): int {
             /** @var PDOStatement $result */
-            $result = self::$dbObj->query("SELECT COUNT(*) as totalCount FROM facts");
+            $result = self::$dbObj->query('SELECT COUNT(*) as totalCount FROM facts');
             /** @var string $row */
             $row = $result->fetchColumn();
 

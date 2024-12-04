@@ -431,7 +431,7 @@ class Paginator implements PaginatorInterface
                 return false;
             }
 
-            return match($key) {
+            return match ($key) {
                 'itemTotalCallback', 'sliceCallback' => $value instanceof Closure,
                 default => \is_int($value)
             };
