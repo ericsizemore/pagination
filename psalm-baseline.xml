@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="dev-master@08afc45a81d1f7c5145341ddf4c3c2c8b1985ed2">
+<files psalm-version="dev-master@765dcbfe43002e52e4808b65561842784fe7bcc7">
   <file src="src/Paginator.php">
     <LessSpecificReturnStatement>
       <code><![CDATA[array_filter($config, static function (mixed $value, string $key) use ($validKeys): bool {
@@ -7,7 +7,7 @@
                 return false;
             }
 
-            return match($key) {
+            return match ($key) {
                 'itemTotalCallback', 'sliceCallback' => $value instanceof Closure,
                 default => \is_int($value)
             };

@@ -13,18 +13,11 @@ Pagination
 [![Downloads per Month](https://img.shields.io/packagist/dm/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
 [![License](https://img.shields.io/packagist/l/esi/pagination.svg)](https://packagist.org/packages/esi/pagination)
 
-Pagination library that implements a paging interface on collections of things.
-
-### Acknowledgements
-
-This library is a `fork` of the `AshleyDawson\SimplePagination`(https://github.com/AshleyDawson/SimplePagination) library by `Ashley Dawson`(https://github.com/AshleyDawson).
-
-To see a list of changes in this library in comparison to the original library, please see the [CHANGELOG.md](CHANGELOG.md) file.
+[Pagination](https://github.com/ericsizemore/pagination) - A library that implements a paging interface on collections of things.
 
 ## Installation
 
-You can install Pagination via [Composer](https://getcomposer.org/). To do that, simply `require` the 
-package in your `composer.json` file like so:
+You can install Pagination via [Composer](https://getcomposer.org/). To do that, simply `require` the package in your `composer.json` file like so:
 
 ```json
 {
@@ -36,9 +29,15 @@ package in your `composer.json` file like so:
 
 Then run `composer update` to install the package.
 
+Or, from the command line:
+
+```bash
+$ composer require esi/pagination:^2.0
+```
+
 ## How Pagination Works
 
-I've tried to make Pagination as simple, flexible, and easy to use as possible. There are four main elements that
+I have tried to make Pagination as simple, flexible, and easy to use as possible. There are four main elements that
 describe the operation of Pagination. These are:
 
 * Paginator service
@@ -314,23 +313,39 @@ echo '<a href="?page=' . $pagination->getLastPageNumber() . '">Last Page</a>';
 
 - Pagination works with PHP 8.2.0 or above.
 
-### Submitting bugs and feature requests
+### Credits
 
-Bugs and feature requests are tracked on [GitHub](https://github.com/ericsizemore/pagination/issues)
+This library is a `fork` of the [AshleyDawson\SimplePagination](https://github.com/AshleyDawson/SimplePagination) library by [Ashley Dawson](https://github.com/AshleyDawson).
 
-Issues are the quickest way to report a bug. If you find a bug or documentation error, please check the following first:
+To view changes in this library in comparison to the original library, please see the [CHANGELOG.md](./CHANGELOG.md) file.
 
-* That there is not an Issue already open concerning the bug
-* That the issue has not already been addressed (within closed Issues, for example)
+- Author: [Eric Sizemore](https://github.com/ericsizemore)
+- Thanks to [Ashley Dawson](https://github.com/AshleyDawson) for the original [AshleyDawson\SimplePagination](https://github.com/AshleyDawson/SimplePagination) library that this library is forked from.
+- Thanks to [all Contributors](https://github.com/ericsizemore/pagination/contributors).
+- Special thanks to [JetBrains](https://www.jetbrains.com/?from=esi-pagination) for their Licenses for Open Source Development.
 
 ### Contributing
 
-See [CONTRIBUTING](CONTRIBUTING.md)
+See [CONTRIBUTING](./CONTRIBUTING.md).
 
-### Author
+Bugs and feature requests are tracked on [GitHub](https://github.com/ericsizemore/pagination/issues).
 
-Eric Sizemore - <admin@secondversion.com> - <https://www.secondversion.com>
+### Contributor Covenant Code of Conduct
+
+See [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+
+### Backward Compatibility Promise
+
+See [backward-compatibility.md](./backward-compatibility.md) for more information on Backwards Compatibility.
+
+### Changelog
+
+See the [CHANGELOG](./CHANGELOG.md) for more information on what has changed recently.
 
 ### License
 
-Pagination is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+See the [LICENSE](./LICENSE.md) for more information on the license that applies to this project.
+
+### Security
+
+See [SECURITY](./SECURITY.md) for more information on the security disclosure process.

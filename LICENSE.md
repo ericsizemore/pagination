@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2024 Eric Sizemore
+Copyright (c) 2024-2025 Eric Sizemore
 Copyright (c) 2015-2019 Ashley Dawson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

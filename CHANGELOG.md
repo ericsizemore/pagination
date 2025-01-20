@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+  * Several updates throughout to bring this repository more in line with the project template I normally use.
+    * Updated:
+      * CONTRIBUTING.md — updated to use my most current project template contributing information.
+      * README.md — updated to more closely follow my preferred layout for README files.
+      * composer.json — updated dependencies and modified the `scripts` to more closely match my project template.
+  * Merged the `main`, `psalm`, and `tests` workflows in `.github/workflows` into one workflow file `continuous-integration.yml`.
+
+### Added
+
+  * Added `rector` as a dev-dependency.
+    * Adds `rector.php` in the main repo for Rector configuration.
+  * Added a new `release` workflow to `.github/workflows` to allow automatic creation of a release when a tag is pushed.
+
+
 ## [2.0.2] - 2024-09-26
 
 Mostly small coding standard (CS) related changes, with some improvements to method docblocks throughout.
