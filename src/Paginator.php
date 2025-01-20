@@ -40,6 +40,7 @@ use const ARRAY_FILTER_USE_BOTH;
  *
  * @psalm-import-type ItemTotalCallback from PaginatorInterface
  * @psalm-import-type SliceCallback from PaginatorInterface
+ * @psalm-import-type BeforeAfterQueryCallback from PaginatorInterface
  *
  * @see Tests\PaginatorTest
  */
@@ -47,11 +48,15 @@ class Paginator implements PaginatorInterface
 {
     /**
      * A callback to run after the count and slice queries.
+     *
+     * @var null|BeforeAfterQueryCallback
      */
     private ?Closure $afterQueryCallback = null;
 
     /**
      * A callback to run before the count and slice queries.
+     *
+     * @var null|BeforeAfterQueryCallback
      */
     private ?Closure $beforeQueryCallback = null;
 

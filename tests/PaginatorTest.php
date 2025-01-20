@@ -77,19 +77,28 @@ final class PaginatorTest extends TestCase
         ]);
 
         $beforeQueryFired = false;
-        $paginator->setBeforeQueryCallback(static function () use (&$beforeQueryFired): void {
+        $paginator->setBeforeQueryCallback(static function (Paginator $paginator, Pagination $pagination) use (&$beforeQueryFired): void {
             $beforeQueryFired = true;
+            $paginator->setItemsPerPage(20);
+            $pagination->setItemsPerPage(20);
         });
 
         $afterQueryFired = false;
-        $paginator->setAfterQueryCallback(static function () use (&$afterQueryFired): void {
+        $paginator->setAfterQueryCallback(static function (Paginator $paginator, Pagination $pagination) use (&$afterQueryFired): void {
             $afterQueryFired = true;
+            $paginator->setPagesInRange(10);
+            $pagination->setMeta(['test' => true]);
         });
 
         self::assertFalse($beforeQueryFired);
         self::assertFalse($afterQueryFired);
 
-        $paginator->paginate();
+        $pagination = $paginator->paginate();
+
+        self::assertSame(20, $paginator->getItemsPerPage());
+        self::assertSame(20, $pagination->getItemsPerPage());
+        self::assertSame(10, $paginator->getPagesInRange());
+        self::assertSame(['test' => true], $pagination->getMeta());
 
         /**
          * @phpstan-ignore staticMethod.impossibleType
@@ -105,11 +114,14 @@ final class PaginatorTest extends TestCase
 
         self::assertInstanceOf(\Closure::class, $beforeCallback);
         self::assertInstanceOf(\Closure::class, $afterCallback);
-
-        self::assertNull($beforeCallback());
-        self::assertNull($afterCallback());
     }
 
+    /**
+     * @psalm-suppress UnusedClosureParam
+     *
+     * Suppressing as we don't really need to test modifing or using the $paginator or $pagination object,
+     * we are just testing for an exception being thrown and the callbacks not firing.
+     */
     public function testBeforeAndAfterQueryCallbacksZeroPageNumber(): void
     {
         $items = range(0, 27);
@@ -122,12 +134,12 @@ final class PaginatorTest extends TestCase
         ]);
 
         $beforeQueryFired = false;
-        $paginator->setBeforeQueryCallback(static function () use (&$beforeQueryFired): void {
+        $paginator->setBeforeQueryCallback(static function (Paginator $paginator, Pagination $pagination) use (&$beforeQueryFired): void {
             $beforeQueryFired = true;
         });
 
         $afterQueryFired = false;
-        $paginator->setAfterQueryCallback(static function () use (&$afterQueryFired): void {
+        $paginator->setAfterQueryCallback(static function (Paginator $paginator, Pagination $pagination) use (&$afterQueryFired): void {
             $afterQueryFired = true;
         });
 

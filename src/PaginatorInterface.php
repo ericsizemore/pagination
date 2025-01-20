@@ -24,6 +24,7 @@ namespace Esi\Pagination;
 use Closure;
 use Esi\Pagination\Exception\CallbackNotFoundException;
 use Esi\Pagination\Exception\InvalidPageNumberException;
+use Iterator;
 
 /**
  * Interface PaginatorInterface.
@@ -31,17 +32,22 @@ use Esi\Pagination\Exception\InvalidPageNumberException;
  * These Closure signatures are gnarly, so further work will be/needs to be done.
  *
  * @psalm-type ItemTotalCallback = Closure(Pagination): (int<0, max>|int<1, max>)|Closure(): (int<0, max>|int<1, max>)
- * @psalm-type SliceCallback = Closure(int<0, max>, int<0, max>, Pagination): (array<mixed>|list<mixed>|\Iterator<mixed, mixed>)|Closure(int<0, max>, int<0, max>, Pagination=): (array<mixed>|list<mixed>|\Iterator<mixed, mixed>)
+ * @psalm-type SliceCallback = Closure(int<0, max>, int<0, max>, Pagination): (array<mixed>|list<mixed>|Iterator<mixed, mixed>)|Closure(int<0, max>, int<0, max>, Pagination=): (array<mixed>|list<mixed>|Iterator<mixed, mixed>)
+ * @psalm-type BeforeAfterQueryCallback = Closure(Paginator, Pagination): void
  */
 interface PaginatorInterface
 {
     /**
      * Returns the currently assigned after query callback, null if not set.
+     *
+     * @return null|BeforeAfterQueryCallback
      */
     public function getAfterQueryCallback(): ?Closure;
 
     /**
      * Returns the currently assigned before query callback, null if not set.
+     *
+     * @return null|BeforeAfterQueryCallback
      */
     public function getBeforeQueryCallback(): ?Closure;
 
@@ -88,14 +94,30 @@ interface PaginatorInterface
     /**
      * Sets the after query callback. Called after the count and slice queries.
      *
-     * This should be a Closure, and there is no real return or signature expectation.
+     * This should be a Closure that returns `void`.
+     *
+     * ```
+     * static function (Paginator $paginator, Pagination $pagination) use (): void {
+     *     // ...
+     * }
+     * ```
+     *
+     * @param null|BeforeAfterQueryCallback $afterQueryCallback
      */
     public function setAfterQueryCallback(?Closure $afterQueryCallback): PaginatorInterface;
 
     /**
      * Sets the before query callback. Called before the count and slice queries.
      *
-     * This should be a Closure, and there is no real return or signature expectation.
+     * This should be a Closure that returns `void`.
+     *
+     * ```
+     * static function (Paginator $paginator, Pagination $pagination) use (): void {
+     *     // ...
+     * }
+     * ```
+     *
+     * @param null|BeforeAfterQueryCallback $beforeQueryCallback
      */
     public function setBeforeQueryCallback(?Closure $beforeQueryCallback): PaginatorInterface;
 
