@@ -15,12 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       * README.md — updated to more closely follow my preferred layout for README files.
       * composer.json — updated dependencies and modified the `scripts` to more closely match my project template.
   * Merged the `main`, `psalm`, and `tests` workflows in `.github/workflows` into one workflow file `continuous-integration.yml`.
+  * Various updates to PHPDocs and code, throughout the entire library, to improve type safety and coverage as much as possible.
+    *  This includes updating PHPDoc blocks in the PaginatorInterface to provide clarification on the expected `Closure` signatures 
+       for the `itemTotalCallback` and `sliceCallback` callbacks. Further documentation for this is on the TODO list.
 
 ### Added
 
   * Added `rector` as a dev-dependency.
     * Adds `rector.php` in the main repo for Rector configuration.
   * Added a new `release` workflow to `.github/workflows` to allow automatic creation of a release when a tag is pushed.
+
+### Removed
+
+  * Baseline files for Psalm and PHPStan.
 
 
 ## [2.0.2] - 2024-09-26

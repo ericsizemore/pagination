@@ -28,7 +28,10 @@ use Esi\Pagination\Exception\InvalidPageNumberException;
 /**
  * Interface PaginatorInterface.
  *
- * @psalm-api
+ * These Closure signatures are gnarly, so further work will be/needs to be done.
+ *
+ * @psalm-type ItemTotalCallback = Closure(Pagination): (int<0, max>|int<1, max>)|Closure(): (int<0, max>|int<1, max>)
+ * @psalm-type SliceCallback = Closure(int<0, max>, int<0, max>, Pagination): (array<mixed>|list<mixed>|\Iterator<mixed, mixed>)|Closure(int<0, max>, int<0, max>, Pagination=): (array<mixed>|list<mixed>|\Iterator<mixed, mixed>)
  */
 interface PaginatorInterface
 {
@@ -44,28 +47,36 @@ interface PaginatorInterface
 
     /**
      * Returns the number of items per page.
+     *
+     * @return int<-1, max>
      */
     public function getItemsPerPage(): int;
 
     /**
      * Returns the currently assigned item total callback, or null if not set.
+     *
+     * @return ?ItemTotalCallback
      */
     public function getItemTotalCallback(): ?Closure;
 
     /**
      * Returns the number of pages in range.
+     *
+     * @return int<0, max>
      */
     public function getPagesInRange(): int;
 
     /**
      * Returns the currently assigned slice callback, or null if not set.
+     *
+     * @return ?SliceCallback
      */
     public function getSliceCallback(): ?Closure;
 
     /**
      * Run paginate algorithm using the current page number.
      *
-     * @param int $currentPageNumber Page number, usually passed from the current request.
+     * @param int<0, max> $currentPageNumber Page number, usually passed from the current request.
      *
      * @throws CallbackNotFoundException
      * @throws InvalidPageNumberException
@@ -90,6 +101,8 @@ interface PaginatorInterface
 
     /**
      * Sets the number of items per page.
+     *
+     * @param int<-1, max> $itemsPerPage
      */
     public function setItemsPerPage(int $itemsPerPage): PaginatorInterface;
 
@@ -98,14 +111,30 @@ interface PaginatorInterface
      *
      * This should be a Closure, and it would be expected to return an integer. For example:
      *
-     * function() use($items): int {
-     *     return count($items);
+     * ```
+     * static function() use($items): int {
+     *     return \count($items);
      * }
+     * ```
+     *
+     * You can also pass Pagination, if needed (to set meta data for example):
+     *
+     * ```
+     * static function (Pagination $pagination): int {
+     *     $pagination->setMeta(['meta_3']);
+     *
+     *     return \count($items);
+     * }
+     * ```
+     *
+     * @param ?ItemTotalCallback $itemTotalCallback
      */
     public function setItemTotalCallback(?Closure $itemTotalCallback): PaginatorInterface;
 
     /**
      * Sets the number of pages in range.
+     *
+     * @param int<0, max> $pagesInRange
      */
     public function setPagesInRange(int $pagesInRange): PaginatorInterface;
 
@@ -114,9 +143,23 @@ interface PaginatorInterface
      *
      * This should be a Closure, and it would be expected to return an array. For example:
      *
-     * function (int $offset, int $length) use ($items): array {
-     *     return array_slice($items, $offset, $length);
+     * ```
+     * static function (int $offset, int $length) use ($items): array {
+     *     return \array_slice($items, $offset, $length);
      * }
+     * ```
+     *
+     * You can also pass Pagination, if needed (to set meta data for example):
+     *
+     * ```
+     * static function (int $offset, int $length, Pagination $pagination) use ($items): array {
+     *     $pagination->setMeta(array_merge($pagination->getMeta(), ['meta_4']));
+     *
+     *     return \array_slice($items, $offset, $length);
+     * }
+     * ```
+     *
+     * @param ?SliceCallback $sliceCallback
      */
     public function setSliceCallback(?Closure $sliceCallback): PaginatorInterface;
 }

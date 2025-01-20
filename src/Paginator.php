@@ -38,6 +38,9 @@ use const ARRAY_FILTER_USE_BOTH;
 /**
  * Main Paginator Class.
  *
+ * @psalm-import-type ItemTotalCallback from PaginatorInterface
+ * @psalm-import-type SliceCallback from PaginatorInterface
+ *
  * @see Tests\PaginatorTest
  */
 class Paginator implements PaginatorInterface
@@ -54,21 +57,29 @@ class Paginator implements PaginatorInterface
 
     /**
      * Number of items to include per page.
+     *
+     * @var int<-1, max>
      */
     private int $itemsPerPage = 10;
 
     /**
      * A callback that is used to determine the total number of items in your collection (returned as an integer).
+     *
+     * @var null|ItemTotalCallback
      */
     private ?Closure $itemTotalCallback = null;
 
     /**
      * Number of pages in range.
+     *
+     * @var int<0, max>
      */
     private int $pagesInRange = 5;
 
     /**
      * A callback to slice your collection given an offset and length argument.
+     *
+     * @var ?SliceCallback
      */
     private ?Closure $sliceCallback = null;
 
@@ -77,10 +88,10 @@ class Paginator implements PaginatorInterface
      *
      * <code>
      * $paginator = new Paginator([
-     *     'itemTotalCallback' => function () {
+     *     'itemTotalCallback' => static function (): int {
      *         // ...
      *     },
-     *     'sliceCallback' => function (int $offset, int $length) {
+     *     'sliceCallback' => static function (int $offset, int $length, ?Pagination $pagination = null): array {
      *         // ...
      *     },
      *     'itemsPerPage' => 10,
@@ -89,10 +100,10 @@ class Paginator implements PaginatorInterface
      * </code>
      *
      * @param null|array{}|array{
-     *     itemTotalCallback?: Closure,
-     *     sliceCallback?: Closure,
-     *     itemsPerPage?: int,
-     *     pagesInRange?: int
+     *     itemTotalCallback?: ItemTotalCallback,
+     *     sliceCallback?: SliceCallback,
+     *     itemsPerPage?: int<0, max>,
+     *     pagesInRange?: int<0, max>
      * } $config
      */
     public function __construct(?array $config = null)
@@ -103,8 +114,8 @@ class Paginator implements PaginatorInterface
             return;
         }
 
-        $this->setItemTotalCallback($config['itemTotalCallback'] ?? static function (): void {});
-        $this->setSliceCallback($config['sliceCallback'] ?? static function (): void {});
+        $this->setItemTotalCallback($config['itemTotalCallback'] ?? static fn (): int => 0);
+        $this->setSliceCallback($config['sliceCallback'] ?? static fn (int $limit, int $offset): array => [$limit, $offset]);
         $this->setItemsPerPage($config['itemsPerPage'] ?? 10);
         $this->setPagesInRange($config['pagesInRange'] ?? 5);
     }
@@ -169,13 +180,13 @@ class Paginator implements PaginatorInterface
     #[\Override]
     public function paginate(int $currentPageNumber = 1): Pagination
     {
-        if ($this->itemTotalCallback === null) {
+        if (!$this->itemTotalCallback instanceof Closure) {
             throw new CallbackNotFoundException(
                 'Item total callback not found, set it using Paginator::setItemTotalCallback()'
             );
         }
 
-        if ($this->sliceCallback === null) {
+        if (!$this->sliceCallback instanceof Closure) {
             throw new CallbackNotFoundException(
                 'Slice callback not found, set it using Paginator::setSliceCallback()'
             );
@@ -195,31 +206,38 @@ class Paginator implements PaginatorInterface
         $pagination = new Pagination();
 
         $beforeQueryCallback($this, $pagination);
-        $totalNumberOfItems = (int) $itemTotalCallback($pagination);
+        $totalNumberOfItems = $itemTotalCallback($pagination);
         $afterQueryCallback($this, $pagination);
 
+        /**
+         * @var int<0, max> $numberOfPages
+         */
         $numberOfPages = (int) ceil($totalNumberOfItems / $this->itemsPerPage);
         $pagesInRange  = min($this->pagesInRange, $numberOfPages);
         $pages         = self::determinePageRange($currentPageNumber, $pagesInRange, $numberOfPages);
-        $offset        = ($currentPageNumber - 1) * $this->itemsPerPage;
+
+        /**
+         * @var int<0, max> $offset
+         */
+        $offset = ($currentPageNumber - 1) * $this->itemsPerPage;
 
         $beforeQueryCallback($this, $pagination);
 
         if (-1 === $this->itemsPerPage) {
             /**
-             * @psalm-var array<array-key, int>|Iterator $items
+             * @psalm-var array<array-key, int<0, max>>|Iterator $items
              */
             $items = $sliceCallback(0, 999_999_999, $pagination);
         } else {
             /**
-             * @psalm-var array<array-key, int>|Iterator $items
+             * @psalm-var array<array-key, int<-1, max>>|Iterator $items
              */
             $items = $sliceCallback($offset, $this->itemsPerPage, $pagination);
         }
 
         if ($items instanceof Iterator) {
             /**
-             * @psalm-var array<array-key, int> $items
+             * @psalm-var array<array-key, int<0, max>> $items
              */
             $items = iterator_to_array($items);
         }
@@ -229,7 +247,7 @@ class Paginator implements PaginatorInterface
         $previousPageNumber = self::determinePreviousPageNumber($currentPageNumber);
         $nextPageNumber     = self::determineNextPageNumber($currentPageNumber, $numberOfPages);
 
-        /** @var non-empty-array<int> $pages * */
+        /** @var non-empty-array<int<0, max>> $pages * */
         $pagination
             ->setItems($items)
             ->setPages($pages)
@@ -364,24 +382,29 @@ class Paginator implements PaginatorInterface
      * Determines the number of pages in range given the current page number, currently
      * set pages in range, and total number of pages.
      *
-     * @return array<int>
+     * @return non-empty-list<int<0, max>>
      */
     protected static function determinePageRange(int $currentPageNumber, int $pagesInRange, int $numberOfPages): array
     {
         $change = (int) ceil($pagesInRange / 2);
 
         if (($currentPageNumber - $change) > ($numberOfPages - $pagesInRange)) {
-            $pages = range(($numberOfPages - $pagesInRange) + 1, $numberOfPages);
-        } else {
-            if (($currentPageNumber - $change) < 0) {
-                $change = $currentPageNumber;
-            }
-
-            $offset = $currentPageNumber - $change;
-            $pages  = range(($offset + 1), $offset + $pagesInRange);
+            /**
+             * @var non-empty-list<int<0, max>>
+             */
+            return range(($numberOfPages - $pagesInRange) + 1, $numberOfPages);
         }
 
-        return $pages;
+        if (($currentPageNumber - $change) < 0) {
+            $change = $currentPageNumber;
+        }
+
+        $offset = $currentPageNumber - $change;
+
+        /**
+         * @var non-empty-list<int<0, max>>
+         */
+        return range(($offset + 1), $offset + $pagesInRange);
     }
 
     /**
@@ -402,23 +425,23 @@ class Paginator implements PaginatorInterface
      * Helper function for __construct() to validate the passed $config.
      *
      * @param null|array{}|array{
-     *     itemTotalCallback?: Closure,
-     *     sliceCallback?: Closure,
-     *     itemsPerPage?: int,
-     *     pagesInRange?: int
+     *     itemTotalCallback?: ItemTotalCallback,
+     *     sliceCallback?: SliceCallback,
+     *     itemsPerPage?: int<0, max>,
+     *     pagesInRange?: int<0, max>
      * } $config Expected array signature.
      *
      * @return array{}|array{
-     *     itemTotalCallback?: Closure,
-     *     sliceCallback?: Closure,
-     *     itemsPerPage?: int,
-     *     pagesInRange?: int
+     *     itemTotalCallback?: ItemTotalCallback,
+     *     sliceCallback?: SliceCallback,
+     *     itemsPerPage?: int<0, max>,
+     *     pagesInRange?: int<0, max>
      * }
      */
     protected static function validateConfig(?array $config = null): array
     {
         /**
-         * @var null|array<string>
+         * @var null|array<string> $validKeys
          */
         static $validKeys;
 
@@ -426,7 +449,15 @@ class Paginator implements PaginatorInterface
 
         $config ??= [];
 
-        return array_filter($config, static function (mixed $value, string $key) use ($validKeys): bool {
+        /**
+         * @var array{}|array{
+         *     itemTotalCallback?: ItemTotalCallback,
+         *     sliceCallback?: SliceCallback,
+         *     itemsPerPage?: int<0, max>,
+         *     pagesInRange?: int<0, max>
+         * } $filtered
+         */
+        $filtered = array_filter($config, static function (mixed $value, string $key) use ($validKeys): bool {
             if (!\in_array($key, $validKeys, true)) {
                 return false;
             }
@@ -436,5 +467,7 @@ class Paginator implements PaginatorInterface
                 default => \is_int($value)
             };
         }, ARRAY_FILTER_USE_BOTH);
+
+        return $filtered;
     }
 }

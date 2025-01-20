@@ -106,7 +106,7 @@
         "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon -vvv",
         "phpunit": "vendor/bin/phpunit",
         "phpunit:migrate": "@phpunit --migrate-configuration",
-        "psalm": "vendor/bin/psalm -c psalm.xml --no-cache --no-diff --use-baseline=psalm-baseline.xml",
+        "psalm": "vendor/bin/psalm -c psalm.xml --no-cache --no-diff",
         "psalm:baseline": "vendor/bin/psalm -c psalm.xml --no-cache --no-diff --set-baseline=psalm-baseline.xml",
         "psalm:security": "vendor/bin/psalm -c psalm.xml --no-cache --no-diff --taint-analysis",
         "psalm:shepherd": "@psalm --shepherd --stats",

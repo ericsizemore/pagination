@@ -20,6 +20,13 @@
             <directory name="build"/>
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <PossiblyUnusedReturnValue>
+            <errorLevel type="suppress">
+                <file name="src/PaginatorInterface.php"/>
+            </errorLevel>
+        </PossiblyUnusedReturnValue>
+    </issueHandlers>
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
     </plugins>

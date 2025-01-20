@@ -42,17 +42,17 @@ use function range;
 #[CoversClass(Pagination::class)]
 #[UsesClass(CallbackNotFoundException::class)]
 #[UsesClass(InvalidPageNumberException::class)]
-class PaginatorTest extends TestCase
+final class PaginatorTest extends TestCase
 {
     /**
      * Paginator object used throughout testing.
      */
-    protected Paginator $paginator;
+    private Paginator $paginator;
 
     /**
      * PDO_SQLITE object for the database testing.
      */
-    protected static PDO $dbObj;
+    private static PDO $pdo;
 
     /**
      * Creates our Paginator and PDO objects.
@@ -62,7 +62,7 @@ class PaginatorTest extends TestCase
         parent::setUp();
 
         $this->paginator = new Paginator();
-        self::$dbObj     = new PDO(\sprintf('sqlite:%s/fixtures/factbook.db', __DIR__));
+        self::$pdo       = new PDO(\sprintf('sqlite:%s/fixtures/factbook.db', __DIR__));
     }
 
     public function testBeforeAndAfterQueryCallbacks(): void
@@ -91,7 +91,13 @@ class PaginatorTest extends TestCase
 
         $paginator->paginate();
 
+        /**
+         * @phpstan-ignore staticMethod.impossibleType
+         */
         self::assertTrue($beforeQueryFired);
+        /**
+         * @phpstan-ignore staticMethod.impossibleType
+         */
         self::assertTrue($afterQueryFired);
 
         $beforeCallback = $paginator->getBeforeQueryCallback();
@@ -132,8 +138,14 @@ class PaginatorTest extends TestCase
         $paginator->paginate(0);
     }
 
+    /**
+     * @psalm-suppress InvalidArgument
+     */
     public function testConstructionWithInvalidConfig(): void
     {
+        /**
+         * @phpstan-ignore argument.type
+         */
         $paginator = new Paginator([
             'itemTotalCallback' => '',
             'sliceCallback'     => '',
@@ -148,12 +160,18 @@ class PaginatorTest extends TestCase
         self::assertSame(5, $paginator->getPagesInRange());
     }
 
+    /**
+     * @psalm-suppress InvalidArgument
+     */
     public function testItemTotalCallbackNotFound(): void
     {
         $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
 
         $this->expectException(CallbackNotFoundException::class);
         $this->paginator->setItemTotalCallback(null);
+        /**
+         * @phpstan-ignore argument.type
+         */
         $this->paginator->setSliceCallback(static fn (): string => 'slice_callback');
         $this->paginator->paginate();
     }
@@ -174,19 +192,26 @@ class PaginatorTest extends TestCase
             ->setItemsPerPage(10)
             ->setPagesInRange(5);
 
-        $paginator->setItemTotalCallback(static function (): int {
-            /** @var PDOStatement $result */
-            $result = self::$dbObj->query('SELECT COUNT(*) as totalCount FROM facts');
-            /** @var string $row */
-            $row = $result->fetchColumn();
+        $paginator->setItemTotalCallback(
+            /**
+             * @return int<0, max>
+             */
+            static function (): int {
+                /** @var PDOStatement $result */
+                $result = self::$pdo->query('SELECT COUNT(*) as totalCount FROM facts');
+                /** @var string $row */
+                $row = $result->fetchColumn();
+                /** @var int<0, max> $row */
+                $row = (int) $row;
 
-            return (int) $row;
-        });
+                return $row;
+            }
+        );
 
         // Pass our slice callback.
         $paginator->setSliceCallback(static function (int $offset, int $length): array {
             /** @var PDOStatement $result */
-            $result     = self::$dbObj->query(\sprintf('SELECT name, area FROM facts ORDER BY area DESC LIMIT %d, %d', $offset, $length), PDO::FETCH_ASSOC);
+            $result     = self::$pdo->query(\sprintf('SELECT name, area FROM facts ORDER BY area DESC LIMIT %d, %d', $offset, $length), PDO::FETCH_ASSOC);
             $collection = [];
 
             foreach ($result as $row) {
@@ -377,17 +402,27 @@ class PaginatorTest extends TestCase
 
         $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
 
-        $this->paginator->setItemTotalCallback(static function (Pagination $pagination) use ($items): int {
-            $pagination->setMeta(['meta_3']);
+        $this->paginator->setItemTotalCallback(
+            static function (Pagination $pagination) use ($items): int {
+                $pagination->setMeta(['meta_3']);
 
-            return \count($items);
-        });
+                return \count($items);
+            }
+        );
 
-        $this->paginator->setSliceCallback(static function (int $offset, int $length, Pagination $pagination) use ($items): array {
-            $pagination->setMeta(array_merge($pagination->getMeta(), ['meta_4']));
+        $this->paginator->setSliceCallback(
+            /**
+             * @param int<0, max> $offset
+             * @param int<0, max> $length
+             *
+             * @return list<mixed>
+             */
+            static function (int $offset, int $length, Pagination $pagination) use ($items): array {
+                $pagination->setMeta(array_merge($pagination->getMeta(), ['meta_4']));
 
-            return \array_slice($items, $offset, $length);
-        });
+                return \array_slice($items, $offset, $length);
+            }
+        );
 
         $pagination = $this->paginator->paginate();
 
@@ -727,14 +762,23 @@ class PaginatorTest extends TestCase
         self::assertSame(45, $this->paginator->getItemsPerPage());
     }
 
+    /**
+     * @psalm-suppress InvalidArgument
+     */
     public function testSetItemTotalCallback(): void
     {
+        /**
+         * @phpstan-ignore argument.type
+         */
         $this->paginator->setItemTotalCallback(static fn (): string => 'item_total_callback');
 
         $callback = $this->paginator->getItemTotalCallback();
 
         self::assertInstanceOf(\Closure::class, $callback);
 
+        /**
+         * @phpstan-ignore staticMethod.impossibleType
+         */
         self::assertSame('item_total_callback', $callback());
     }
 
@@ -745,22 +789,38 @@ class PaginatorTest extends TestCase
         self::assertSame(23, $this->paginator->getPagesInRange());
     }
 
+    /**
+     * @psalm-suppress InvalidArgument
+     * @psalm-suppress TooFewArguments
+     */
     public function testSetSliceCallback(): void
     {
+        /**
+         * @phpstan-ignore argument.type
+         */
         $this->paginator->setSliceCallback(static fn (): string => 'slice_callback');
 
         $callback = $this->paginator->getSliceCallback();
 
         self::assertInstanceOf(\Closure::class, $callback);
 
+        /**
+         * @phpstan-ignore staticMethod.impossibleType, arguments.count
+         */
         self::assertSame('slice_callback', $callback());
     }
 
+    /**
+     * @psalm-suppress InvalidArgument
+     */
     public function testSliceCallbackNotFound(): void
     {
         $this->paginator->setItemsPerPage(10)->setPagesInRange(5);
 
         $this->expectException(CallbackNotFoundException::class);
+        /**
+         * @phpstan-ignore argument.type
+         */
         $this->paginator->setItemTotalCallback(static fn (): string => 'item_total_callback');
         $this->paginator->setSliceCallback(null);
         $this->paginator->paginate();

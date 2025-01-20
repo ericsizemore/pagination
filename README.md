@@ -15,22 +15,10 @@ Pagination
 
 ## Installation
 
-You can install Pagination via [Composer](https://getcomposer.org/). To do that, simply `require` the package in your `composer.json` file like so:
-
-```json
-{
-    "require": {
-        "esi/pagination": "^2.0"
-    }
-}
-```
-
-Then run `composer update` to install the package.
-
-Or, from the command line:
+`Esi\Pagination` can be installed via [Composer](https://getcomposer.org/):
 
 ```bash
-$ composer require esi/pagination:^2.0
+$ composer require esi/pagination:^2.1
 ```
 
 ## How Pagination Works
