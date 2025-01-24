@@ -91,7 +91,7 @@ class Paginator implements PaginatorInterface
     /**
      * Constructor - passing optional configuration.
      *
-     * <code>
+     * ```
      * $paginator = new Paginator([
      *     'itemTotalCallback' => static function (): int {
      *         // ...
@@ -102,7 +102,7 @@ class Paginator implements PaginatorInterface
      *     'itemsPerPage' => 10,
      *     'pagesInRange' => 5,
      * ]);
-     * </code>
+     * ```
      *
      * @param null|array{}|array{
      *     itemTotalCallback?: ItemTotalCallback,
