@@ -327,7 +327,6 @@ To view changes in this library in comparison to the original library, please se
 - Author: [Eric Sizemore](https://github.com/ericsizemore)
 - Thanks to [Ashley Dawson](https://github.com/AshleyDawson) for the original [AshleyDawson\SimplePagination](https://github.com/AshleyDawson/SimplePagination) library that this library is forked from.
 - Thanks to [all Contributors](https://github.com/ericsizemore/pagination/contributors).
-- Special thanks to [JetBrains](https://www.jetbrains.com/?from=esi-pagination) for their Licenses for Open Source Development.
 
 ### Contributing
 
