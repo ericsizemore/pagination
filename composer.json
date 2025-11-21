@@ -49,7 +49,7 @@
         }
     ],
     "require": {
-        "php": "^8.2 <8.5"
+        "php": "<8.6"
     },
     "require-dev": {
         "ext-pdo": "*",
