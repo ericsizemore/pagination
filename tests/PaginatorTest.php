@@ -57,6 +57,7 @@ final class PaginatorTest extends TestCase
     /**
      * Creates our Paginator and PDO objects.
      */
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -226,6 +227,9 @@ final class PaginatorTest extends TestCase
             $result     = self::$pdo->query(\sprintf('SELECT name, area FROM facts ORDER BY area DESC LIMIT %d, %d', $offset, $length), PDO::FETCH_ASSOC);
             $collection = [];
 
+            /**
+             * @var array<int, array<string, int|string>> $row
+             */
             foreach ($result as $row) {
                 $collection[] = $row;
             }

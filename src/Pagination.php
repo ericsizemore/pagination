@@ -108,6 +108,7 @@ class Pagination implements Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function count(): int
     {
         return \count($this->items);
@@ -148,6 +149,7 @@ class Pagination implements Countable, IteratorAggregate
      *
      * @return ArrayIterator<(int|string), int>
      */
+    #[\Override]
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->items);

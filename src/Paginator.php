@@ -104,12 +104,12 @@ class Paginator implements PaginatorInterface
      * ]);
      * ```
      *
-     * @param null|array{}|array{
+     * @param null|array{
      *     itemTotalCallback?: ItemTotalCallback,
      *     sliceCallback?: SliceCallback,
      *     itemsPerPage?: int<0, max>,
      *     pagesInRange?: int<0, max>
-     * } $config
+     * }|array{} $config
      */
     public function __construct(?array $config = null)
     {
@@ -230,12 +230,12 @@ class Paginator implements PaginatorInterface
 
         if (-1 === $this->itemsPerPage) {
             /**
-             * @psalm-var array<array-key, int<0, max>>|Iterator $items
+             * @psalm-var array<array-key, int<0, max>>|Iterator<array-key, int<0, max>> $items
              */
             $items = $sliceCallback(0, 999_999_999, $pagination);
         } else {
             /**
-             * @psalm-var array<array-key, int<-1, max>>|Iterator $items
+             * @psalm-var array<array-key, int<-1, max>>|Iterator<array-key, int<-1, max>> $items
              */
             $items = $sliceCallback($offset, $this->itemsPerPage, $pagination);
         }
@@ -429,19 +429,19 @@ class Paginator implements PaginatorInterface
     /**
      * Helper function for __construct() to validate the passed $config.
      *
-     * @param null|array{}|array{
+     * @param null|array{
      *     itemTotalCallback?: ItemTotalCallback,
      *     sliceCallback?: SliceCallback,
      *     itemsPerPage?: int<0, max>,
      *     pagesInRange?: int<0, max>
-     * } $config Expected array signature.
+     * }|array{} $config Expected array signature.
      *
-     * @return array{}|array{
+     * @return array{
      *     itemTotalCallback?: ItemTotalCallback,
      *     sliceCallback?: SliceCallback,
      *     itemsPerPage?: int<0, max>,
      *     pagesInRange?: int<0, max>
-     * }
+     * }|array{}
      */
     protected static function validateConfig(?array $config = null): array
     {
@@ -455,12 +455,12 @@ class Paginator implements PaginatorInterface
         $config ??= [];
 
         /**
-         * @var array{}|array{
+         * @var array{
          *     itemTotalCallback?: ItemTotalCallback,
          *     sliceCallback?: SliceCallback,
          *     itemsPerPage?: int<0, max>,
          *     pagesInRange?: int<0, max>
-         * } $filtered
+         * }|array{} $filtered
          */
         $filtered = array_filter($config, static function (mixed $value, string $key) use ($validKeys): bool {
             if (!\in_array($key, $validKeys, true)) {
